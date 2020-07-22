@@ -6,10 +6,10 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <repositories>
-        <repository>
+        <!--<repository>
             <id>pentaho</id>
             <url>http://nexus.pentaho.org/content/groups/omni/</url>
-        </repository>
+        </repository>-->
     </repositories>
     <build>
         <plugins>
@@ -22,6 +22,32 @@
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.3.2</version>
+                <configuration>
+                    <!--配置文件的位置-->
+                    <configurationFile>src/main/resources/generatorConfig.xml</configurationFile>
+                    <verbose>true</verbose>
+                    <overwrite>true</overwrite>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>Generate MyBatis Artifacts</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.mybatis.generator</groupId>
+                        <artifactId>mybatis-generator-core</artifactId>
+                        <version>1.3.2</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -41,11 +67,11 @@
         <json-lib-version>2.4</json-lib-version>
         <javax.mail-version>1.5.6</javax.mail-version>
         <jackson.databind-version>2.10.1</jackson.databind-version>
-        <kettle-version>8.0.0.0-28</kettle-version>
+        <kettle-version>8.3.0.0-371</kettle-version>
         <quartz-version>2.2.1</quartz-version>
-        <dependency.hadoop-shims-api.revision>80.2017.10.00-28</dependency.hadoop-shims-api.revision>
-        <pentaho-big-data-plugin.version>8.0.0.0-28</pentaho-big-data-plugin.version>
-        <pdi-osgi-bridge.version>8.0.0.0-28</pdi-osgi-bridge.version>
+        <dependency.hadoop-shims-api.revision>8.3.2019.05.00-371</dependency.hadoop-shims-api.revision>
+        <pentaho-big-data-plugin.version>8.3.0.0-371</pentaho-big-data-plugin.version>
+        <pdi-osgi-bridge.version>8.3.0.0-371</pdi-osgi-bridge.version>
         <kafka-clients.version>0.10.2.1</kafka-clients.version>
         <blueprints-core.version>2.6.0</blueprints-core.version>
         <log4j.version>1.2.16</log4j.version>
@@ -56,7 +82,7 @@
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.1.0</version>
+            <version>11.2.0.3</version>
         </dependency>
         <!-- with spring -->
         <dependency>
@@ -348,5 +374,20 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
+
     </dependencies>
 </project>
