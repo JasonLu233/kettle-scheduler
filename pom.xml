@@ -120,11 +120,11 @@
             <artifactId>jsr250-api</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.ibeetl</groupId>
             <artifactId>beetlsql</artifactId>
             <version>${beetlsql-version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

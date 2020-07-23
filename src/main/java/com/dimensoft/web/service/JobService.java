@@ -13,8 +13,6 @@ import com.dimensoft.core.mapper.KQuartzMapper;
 import com.dimensoft.core.mapper.KRepositoryMapper;
 import com.dimensoft.core.model.*;
 import org.apache.commons.lang.StringUtils;
-import org.beetl.sql.core.DSTransactionManager;
-import org.beetl.sql.core.db.KeyHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -167,7 +165,7 @@ public class JobService {
      * @Description 插入作业到数据库
      */
     public void insert(KJob kJob, Integer uId, String customerQuarz) throws SQLException {
-        DSTransactionManager.start();
+        //DSTransactionManager.start();
         //补充添加作业信息
         //作业基础信息
         kJob.setAddUser(uId);
@@ -198,7 +196,7 @@ public class JobService {
             kJob.setJobQuartz(1);
         }
         kJobMapper.insert(kJob);
-        DSTransactionManager.commit();
+        //DSTransactionManager.commit();
     }
 
     /**

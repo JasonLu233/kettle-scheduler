@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.dimensoft.core.model.KRepository;
+import com.dimensoft.core.model.KUser;
 import org.pentaho.di.core.exception.KettleException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,6 +3,10 @@ package com.dimensoft.web.controller;
 import java.io.File;
 import java.io.IOException;
 
+import com.dimensoft.core.mapper.KJobRecordMapper;
+import com.dimensoft.core.mapper.KTransRecordMapper;
+import com.dimensoft.core.model.KJobRecord;
+import com.dimensoft.core.model.KTransRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class DownLoadRecordController {
 
 	@Autowired
-	private KJobRecordDao kJobRecordDao;
+	private KJobRecordMapper kJobRecordMapper;
 	
 	@Autowired
-	private KTransRecordDao kTransRecordDao;
+	private KTransRecordMapper kTransRecordMapper;
 	
 	@RequestMapping("job/record.shtml")
 	public ResponseEntity<byte[]> jobRecord(Integer recordId){
-		KJobRecord kJobRecord = kJobRecordDao.unique(recordId);
+		KJobRecord kJobRecord = kJobRecordMapper.selectByPrimaryKey(recordId);
 		String logFilePath = kJobRecord.getLogFilePath();		
 		HttpHeaders headers = new HttpHeaders();
 		String fileName = logFilePath.substring(StringUtils.lastIndexOf(logFilePath, "/") + 1, logFilePath.length());		
@@ -43,7 +47,7 @@ public class DownLoadRecordController {
 
 	@RequestMapping("trans/record.shtml")
 	public ResponseEntity<byte[]> transRecord(Integer recordId){
-		KTransRecord kTransRecord = kTransRecordDao.unique(recordId);
+		KTransRecord kTransRecord = kTransRecordMapper.selectByPrimaryKey(recordId);
 		String logFilePath = kTransRecord.getLogFilePath();		
 		HttpHeaders headers = new HttpHeaders();
 		String fileName = logFilePath.substring(StringUtils.lastIndexOf(logFilePath, "/") + 1, logFilePath.length());		

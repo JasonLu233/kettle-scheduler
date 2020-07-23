@@ -5,19 +5,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.dimensoft.core.model.KJobMonitor;
+import com.dimensoft.core.model.KJobRecord;
+import com.dimensoft.core.model.KRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.beetl.sql.core.ClasspathLoader;
-import org.beetl.sql.core.ConnectionSource;
-import org.beetl.sql.core.ConnectionSourceHelper;
-import org.beetl.sql.core.DSTransactionManager;
-import org.beetl.sql.core.Interceptor;
-import org.beetl.sql.core.SQLLoader;
-import org.beetl.sql.core.SQLManager;
-import org.beetl.sql.core.UnderlinedNameConversion;
-import org.beetl.sql.core.db.DBStyle;
-import org.beetl.sql.core.db.MySqlStyle;
-import org.beetl.sql.ext.DebugInterceptor;
+import org.apache.logging.log4j.core.appender.db.jdbc.ConnectionSource;
 import org.pentaho.di.core.ProgressNullMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
@@ -219,7 +212,7 @@ public class JobQuartz implements InterruptableJob {
      */
     private void writeToDBAndFile(Object DbConnectionObject, KJobRecord kJobRecord, String logText, Date lastExecuteTime, Date nextExecuteTime)
             throws IOException, SQLException {
-        // 将日志信息写入文件
+        /*// 将日志信息写入文件
         FileUtils.writeStringToFile(new File(kJobRecord.getLogFilePath()), logText, Constant.DEFAULT_ENCODING, false);
         // 写入转换运行记录到数据库
         DBConnectionModel DBConnectionModel = (DBConnectionModel) DbConnectionObject;
@@ -248,7 +241,7 @@ public class JobQuartz implements InterruptableJob {
             templateOne.setMonitorFail(templateOne.getMonitorFail() + 1);
             sqlManager.updateById(templateOne);
         }
-        DSTransactionManager.commit();
+        DSTransactionManager.commit();*/
     }
 
     @Override

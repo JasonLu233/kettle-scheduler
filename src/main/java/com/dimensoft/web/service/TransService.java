@@ -13,8 +13,6 @@ import com.dimensoft.core.mapper.KTransMapper;
 import com.dimensoft.core.mapper.KTransMonitorMapper;
 import com.dimensoft.core.model.*;
 import org.apache.commons.lang.StringUtils;
-import org.beetl.sql.core.DSTransactionManager;
-import org.beetl.sql.core.db.KeyHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -163,7 +161,7 @@ public class TransService {
      * @Description 添加转换到数据库
      */
     public void insert(KTrans kTrans, Integer uId, String customerQuarz) throws SQLException {
-        DSTransactionManager.start();
+        //DSTransactionManager.start();
         //补充添加作业信息
         //作业基础信息
         kTrans.setAddUser(uId);
@@ -194,7 +192,7 @@ public class TransService {
             kTrans.setTransQuartz(1);
         }
         kTransMapper.insert(kTrans);
-        DSTransactionManager.commit();
+        //DSTransactionManager.commit();
     }
 
     /**

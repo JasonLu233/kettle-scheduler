@@ -4,10 +4,6 @@ import java.util.Date;
 
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.web.quartz.model.DBConnectionModel;
-import org.beetl.sql.core.*;
-import org.beetl.sql.core.db.DBStyle;
-import org.beetl.sql.core.db.MySqlStyle;
-import org.beetl.sql.ext.DebugInterceptor;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -39,7 +35,7 @@ public class QuartzListener implements JobListener{
 		String jobtype = String.valueOf(dataMap.get(Constant.JOBTYPE));
 
 		Object DbConnectionObject = dataMap.get(Constant.DBCONNECTIONOBJECT);
-		DBConnectionModel DBConnectionModel = (DBConnectionModel) DbConnectionObject;
+	/*	DBConnectionModel DBConnectionModel = (DBConnectionModel) DbConnectionObject;
 		ConnectionSource source = ConnectionSourceHelper.getSimple(DBConnectionModel.getConnectionDriveClassName(),
 				DBConnectionModel.getConnectionUrl(), DBConnectionModel.getConnectionUser(), DBConnectionModel.getConnectionPassword());
 		DBStyle mysql = new MySqlStyle();
@@ -56,6 +52,6 @@ public class QuartzListener implements JobListener{
 			KTrans kTrans = sqlManager.unique(KTrans.class, Integer.valueOf(jobId));
 			kTrans.setTransStatus(2);
 			sqlManager.updateTemplateById(kTrans);
-		}
+		}*/
 	}
 }
