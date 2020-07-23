@@ -33,9 +33,6 @@ import org.quartz.*;
 
 import com.dimensoft.common.kettle.repository.RepositoryUtil;
 import com.dimensoft.common.toolkit.Constant;
-import com.dimensoft.core.model.KRepository;
-import com.dimensoft.core.model.KTransMonitor;
-import com.dimensoft.core.model.KTransRecord;
 import com.dimensoft.web.quartz.model.DBConnectionModel;
 
 @DisallowConcurrentExecution

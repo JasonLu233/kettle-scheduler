@@ -13,8 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.BootTablePage;
 import com.dimensoft.core.dto.ResultDto;
-import com.dimensoft.core.model.KJob;
-import com.dimensoft.core.model.KUser;
 import com.dimensoft.web.service.JobService;
 import com.dimensoft.web.utils.JsonUtils;
 

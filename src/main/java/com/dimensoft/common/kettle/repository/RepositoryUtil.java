@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dimensoft.core.model.KRepository;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -16,7 +17,6 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.kettle.RepositoryTree;
-import com.dimensoft.core.model.KRepository;
 
 public class RepositoryUtil {
 

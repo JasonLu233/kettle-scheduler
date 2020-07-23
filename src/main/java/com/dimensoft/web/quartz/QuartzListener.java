@@ -3,8 +3,6 @@ package com.dimensoft.web.quartz;
 import java.util.Date;
 
 import com.dimensoft.common.toolkit.Constant;
-import com.dimensoft.core.model.KJob;
-import com.dimensoft.core.model.KTrans;
 import com.dimensoft.web.quartz.model.DBConnectionModel;
 import org.beetl.sql.core.*;
 import org.beetl.sql.core.db.DBStyle;

@@ -3,19 +3,20 @@ package com.dimensoft.web.service;
 import java.util.Date;
 import java.util.List;
 
+import com.dimensoft.core.mapper.KUserMapper;
+import com.dimensoft.core.model.KUser;
+import com.dimensoft.core.model.KUserExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dimensoft.common.toolkit.MD5Utils;
 import com.dimensoft.core.dto.BootTablePage;
-import com.dimensoft.core.mapper.KUserDao;
-import com.dimensoft.core.model.KUser;
 
 @Service
 public class UserService {
 
 	@Autowired
-	private KUserDao kUserDao;
+	private KUserMapper kUserMapper;
 		
 	/**
 	 * @Title login
@@ -24,11 +25,15 @@ public class UserService {
 	 * @return
 	 * @return KUser
 	 */
-	public KUser login(KUser kUser){		
+	public KUser login(KUser kUser){
 		KUser template = new KUser();
 		template.setDelFlag(1);
 		template.setuAccount(kUser.getuAccount());
-		KUser user = kUserDao.templateOne(template);
+
+		KUserExample example = new KUserExample();
+
+		example.createCriteria().andDelFlagEqualTo(1).andUAccountEqualTo(kUser.getuAccount());
+		KUser user = kUserMapper.selectOneByExample(example);
 		if (null != user){
 			if (user.getuPassword().equals(MD5Utils.Encrypt(kUser.getuPassword(), true))){
 				return user;
@@ -46,7 +51,7 @@ public class UserService {
 	 * @return boolean
 	 */
 	public boolean isAdmin(Integer uId){
-		KUser kUser = kUserDao.unique(uId);
+		KUser kUser = kUserMapper.selectByPrimaryKey(uId);
 		if ("admin".equals(kUser.getuAccount())){
 			return true;
 		}else {
@@ -65,8 +70,8 @@ public class UserService {
 	public BootTablePage getList(Integer start, Integer size){
 		KUser template = new KUser();
 		template.setDelFlag(1);
-		List<KUser> kUserList = kUserDao.template(template, start, size);
-		long allCount = kUserDao.templateCount(template);
+		List<KUser> kUserList = kUserMapper.selectByExample(new KUserExample());
+		long allCount = kUserMapper.countByExample(new KUserExample());
 		BootTablePage bootTablePage = new BootTablePage();
 		bootTablePage.setRows(kUserList);
 		bootTablePage.setTotal(allCount);
@@ -80,9 +85,9 @@ public class UserService {
 	 * @return void
 	 */
 	public void delete(Integer uId){
-		KUser kUser = kUserDao.unique(uId);
+		KUser kUser = kUserMapper.selectByPrimaryKey(uId);
 		kUser.setDelFlag(0);
-		kUserDao.updateById(kUser);
+		kUserMapper.updateByPrimaryKey(kUser);
 	}
 	
 	/**
@@ -98,7 +103,7 @@ public class UserService {
 		kUser.setEditTime(new Date());
 		kUser.setEditUser(uId);
 		kUser.setDelFlag(1);
-		kUserDao.insert(kUser);
+		kUserMapper.insert(kUser);
 	}
 	/**
 	 * @Title IsAccountExist
@@ -110,7 +115,9 @@ public class UserService {
 		KUser template = new KUser();
 		template.setDelFlag(1);
 		template.setuAccount(uAccount);
-		KUser user = kUserDao.templateOne(template);
+		KUserExample example = new KUserExample();
+		example.createCriteria().andDelFlagEqualTo(1).andUAccountEqualTo(uAccount);
+		KUser user = kUserMapper.selectOneByExample(example);
 		if (null == user) {
 			return false;
 		} else {
@@ -126,7 +133,7 @@ public class UserService {
 	 * @return KUser
 	 */
 	public KUser getUser(Integer uId){
-		return kUserDao.single(uId);
+		return kUserMapper.selectByPrimaryKey(uId);
 	}
 	/**
 	 * @Title update
@@ -139,6 +146,6 @@ public class UserService {
 		kUser.setEditTime(new Date());
 		kUser.setEditUser(uId);
 		//只有不为null的字段才参与更新
-		kUserDao.updateTemplateById(kUser);
+		kUserMapper.updateByPrimaryKeySelective(kUser);
 	}
 }

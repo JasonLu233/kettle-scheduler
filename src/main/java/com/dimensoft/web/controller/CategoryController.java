@@ -3,8 +3,6 @@ package com.dimensoft.web.controller;
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.BootTablePage;
 import com.dimensoft.core.dto.ResultDto;
-import com.dimensoft.core.model.KCategory;
-import com.dimensoft.core.model.KUser;
 import com.dimensoft.web.service.CategoryService;
 import com.dimensoft.web.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;

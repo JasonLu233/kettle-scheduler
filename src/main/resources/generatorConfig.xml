@@ -31,7 +31,7 @@
             targetPackage：生成的类要放的包，真实的包受enableSubPackages属性控制；
             targetProject：目标项目，指定一个存在的目录下，生成的内容会放到指定目录中，如果目录不存在，MBG不会自动建目录
          -->
-        <javaModelGenerator targetPackage="com.test.model" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="com.dimensoft.core.model" targetProject="src/main/java">
             <!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false；如果多个数据库改为true分目录 -->
             <property name="enableSubPackages" value="false"/>
             <!-- 设置是否在getter方法中，对String类型字段调用trim()方法 -->
@@ -47,7 +47,7 @@
         <!-- 指定mapper接口生成的位置
          targetPackage、targetProject同javaModelGenerator中作用一样
          -->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.test.dao" targetProject="src/main/java">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.dimensoft.core.mapper" targetProject="src/main/java">
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
@@ -55,6 +55,17 @@
         domainObjectName：生成的domain类的名字,当表名和domain类的名字有差异时一定要设置，如果不设置，直接使用表名作为domain类的名字；
         可以设置为somepck.domainName，那么会自动把domainName类再放到somepck包里面；
         -->
-        <table tableName="k_user" domainObjectName="KUSER"></table>
+        <table schema="kettleweb" tableName="k_category" domainObjectName="KCategory"></table>
+        <table schema="kettleweb" tableName="k_job" domainObjectName="KJob"></table>
+        <table schema="kettleweb" tableName="k_job_monitor" domainObjectName="KJobMonitor"></table>
+        <table schema="kettleweb" tableName="k_job_record" domainObjectName="KJobRecord"></table>
+        <table schema="kettleweb" tableName="k_quartz" domainObjectName="KQuartz"></table>
+        <table schema="kettleweb" tableName="k_repository" domainObjectName="KRepository"></table>
+        <table schema="kettleweb" tableName="k_repository_type" domainObjectName="KRepositoryType"></table>
+        <table schema="kettleweb" tableName="k_trans" domainObjectName="KTrans"></table>
+        <table schema="kettleweb" tableName="k_trans_monitor" domainObjectName="KTransMonitor"></table>
+        <table schema="kettleweb" tableName="k_trans_record" domainObjectName="KTransRecord"></table>
+        <table schema="kettleweb" tableName="k_user" domainObjectName="KUser"></table>
+
     </context>
 </generatorConfiguration>

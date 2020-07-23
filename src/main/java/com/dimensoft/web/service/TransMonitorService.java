@@ -6,21 +6,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dimensoft.core.mapper.KTransMonitorMapper;
+import com.dimensoft.core.model.KTransMonitor;
+import com.dimensoft.core.model.KTransMonitorExample;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.BootTablePage;
-import com.dimensoft.core.mapper.KTransMonitorDao;
-import com.dimensoft.core.model.KTransMonitor;
 import com.dimensoft.web.utils.CommonUtils;
 
 @Service
 public class TransMonitorService {
 
     @Autowired
-    private KTransMonitorDao kTransMonitorDao;
+    private KTransMonitorMapper kTransMonitorMapper;
 
     /**
      * @param start 起始行数
@@ -35,10 +36,12 @@ public class TransMonitorService {
         template.setAddUser(uId);
         template.setMonitorStatus(monitorStatus);
         if (StringUtils.isNotEmpty(transName)) {
-            template.setTransName(transName);
+            //template.setTransName(transName);
         }
-        List<KTransMonitor> kTransMonitorList = kTransMonitorDao.pageQuery(template, start, size, categoryId);
-        Long allCount = kTransMonitorDao.allCount(template, categoryId);
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(monitorStatus);
+        List<KTransMonitor> kTransMonitorList = kTransMonitorMapper.selectByExample(example);
+        Long allCount = (long)kTransMonitorMapper.countByExample(example);
         BootTablePage bootTablePage = new BootTablePage();
         bootTablePage.setRows(kTransMonitorList);
         bootTablePage.setTotal(allCount);
@@ -57,8 +60,10 @@ public class TransMonitorService {
         KTransMonitor template = new KTransMonitor();
         template.setAddUser(uId);
         template.setMonitorStatus(1);
-        List<KTransMonitor> kTransMonitorList = kTransMonitorDao.template(template);
-        Collections.sort(kTransMonitorList);
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(1);
+        List<KTransMonitor> kTransMonitorList = kTransMonitorMapper.selectByExample(example);
+        //Collections.sort(kTransMonitorList);
         List<KTransMonitor> newKTransMonitorList = new ArrayList<KTransMonitor>();
         if (kTransMonitorList.size() >= 5) {
             newKTransMonitorList = kTransMonitorList.subList(0, 5);
@@ -81,7 +86,9 @@ public class TransMonitorService {
         KTransMonitor template = new KTransMonitor();
         template.setAddUser(uId);
         template.setMonitorStatus(1);
-        List<KTransMonitor> kTransMonitorList = kTransMonitorDao.template(template);
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(1);
+        List<KTransMonitor> kTransMonitorList = kTransMonitorMapper.selectByExample(example);
         return kTransMonitorList.size();
     }
 
@@ -95,7 +102,9 @@ public class TransMonitorService {
         KTransMonitor template = new KTransMonitor();
         template.setAddUser(uId);
         template.setMonitorStatus(1);
-        List<KTransMonitor> kTransMonitorList = kTransMonitorDao.template(template);
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(1);
+        List<KTransMonitor> kTransMonitorList = kTransMonitorMapper.selectByExample(example);
         Integer allSuccess = 0;
         for (KTransMonitor KTransMonitor : kTransMonitorList) {
             allSuccess += KTransMonitor.getMonitorSuccess();
@@ -113,7 +122,10 @@ public class TransMonitorService {
         KTransMonitor template = new KTransMonitor();
         template.setAddUser(uId);
         template.setMonitorStatus(1);
-        List<KTransMonitor> kTransMonitorList = kTransMonitorDao.template(template);
+
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(1);
+        List<KTransMonitor> kTransMonitorList = kTransMonitorMapper.selectByExample(example);
         Integer allSuccess = 0;
         for (KTransMonitor KTransMonitor : kTransMonitorList) {
             allSuccess += KTransMonitor.getMonitorFail();
@@ -130,7 +142,9 @@ public class TransMonitorService {
     public Map<String, Object> getTransLine(Integer uId) {
         KTransMonitor template = new KTransMonitor();
         template.setAddUser(uId);
-        List<KTransMonitor> kTransMonitorList = kTransMonitorDao.template(template);
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId);
+        List<KTransMonitor> kTransMonitorList = kTransMonitorMapper.selectByExample(example);
         HashMap<String, Object> resultMap = new HashMap<String, Object>();
         List<Integer> resultList = new ArrayList<Integer>();
         for (int i = 0; i < 7; i++) {

@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dimensoft.core.mapper.KJobMapper;
+import com.dimensoft.core.mapper.KJobMonitorMapper;
+import com.dimensoft.core.mapper.KQuartzMapper;
+import com.dimensoft.core.mapper.KRepositoryMapper;
+import com.dimensoft.core.model.*;
 import org.apache.commons.lang.StringUtils;
 import org.beetl.sql.core.DSTransactionManager;
 import org.beetl.sql.core.db.KeyHolder;
@@ -18,14 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dimensoft.common.exception.SeviceException;
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.BootTablePage;
-import com.dimensoft.core.mapper.KJobDao;
-import com.dimensoft.core.mapper.KJobMonitorDao;
-import com.dimensoft.core.mapper.KQuartzDao;
-import com.dimensoft.core.mapper.KRepositoryDao;
-import com.dimensoft.core.model.KJob;
-import com.dimensoft.core.model.KJobMonitor;
-import com.dimensoft.core.model.KQuartz;
-import com.dimensoft.core.model.KRepository;
 import com.dimensoft.web.quartz.JobQuartz;
 import com.dimensoft.web.quartz.QuartzManager;
 import com.dimensoft.web.quartz.model.DBConnectionModel;
@@ -36,16 +33,16 @@ public class JobService {
 
 
     @Autowired
-    private KJobDao kJobDao;
+    private KJobMapper kJobMapper;
 
     @Autowired
-    private KQuartzDao kQuartzDao;
+    private KQuartzMapper kQuartzMapper;
 
     @Autowired
-    private KRepositoryDao KRepositoryDao;
+    private KRepositoryMapper kRepositoryMapper;
 
     @Autowired
-    private KJobMonitorDao kJobMonitorDao;
+    private KJobMonitorMapper kJobMonitorMapper;
 
     @Value("${kettle.log.file.path}")
     private String kettleLogFilePath;
@@ -83,10 +80,14 @@ public class JobService {
         if (StringUtils.isNotEmpty(jobName)) {
             template.setJobName(jobName);
         }
-//		List<KJob> kJobList = kJobDao.template(template, start, size);
-//		Long allCount = kJobDao.templateCount(template);
-        List<KJob> kJobList = kJobDao.pageQuery(template, start, size);
-        Long allCount = kJobDao.allCount(template);
+//		List<KJob> kJobList = kJobMapper.template(template, start, size);
+//		Long allCount = kJobMapper.templateCount(template);
+
+        KJobExample example = new KJobExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+
+        List<KJob> kJobList = kJobMapper.selectByExample(example);
+        int allCount = kJobMapper.countByExample(example);
         BootTablePage bootTablePage = new BootTablePage();
         bootTablePage.setRows(kJobList);
         bootTablePage.setTotal(allCount);
@@ -103,7 +104,9 @@ public class JobService {
         KJob template = new KJob();
         template.setAddUser(uId);
         template.setDelFlag(1);
-        return kJobDao.template(template);
+        KJobExample example = new KJobExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+        return kJobMapper.selectByExample(example);
     }
 
     /**
@@ -113,9 +116,9 @@ public class JobService {
      * @Description 删除作业
      */
     public void delete(Integer jobId) {
-        KJob kJob = kJobDao.unique(jobId);
+        KJob kJob = kJobMapper.selectByPrimaryKey(jobId);
         kJob.setDelFlag(0);
-        kJobDao.updateById(kJob);
+        kJobMapper.updateByPrimaryKey(kJob);
     }
 
     /**
@@ -132,7 +135,9 @@ public class JobService {
         template.setAddUser(uId);
         template.setJobRepositoryId(repositoryId);
         template.setJobPath(jobPath);
-        List<KJob> kJobList = kJobDao.template(template);
+        KJobExample example = new KJobExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+        List<KJob> kJobList = kJobMapper.selectByExample(example);
         if (null != kJobList && kJobList.size() > 0) {
             return false;
         } else {
@@ -183,15 +188,16 @@ public class JobService {
             kQuartz.setDelFlag(1);
             kQuartz.setQuartzCron(customerQuarz);
             kQuartz.setQuartzDescription(kJob.getJobName() + "的定时策略");
-            KeyHolder kQuartzKey = kQuartzDao.insertReturnKey(kQuartz);
+            //KeyHolder kQuartzKey = kQuartzMapper.insertReturnKey(kQuartz);
+            kQuartzMapper.insert(kQuartz);
             //插入调度策略
-            kJob.setJobQuartz(kQuartzKey.getInt());
+            //kJob.setJobQuartz(kQuartzKey.getInt());
         } else if (StringUtils.isBlank(customerQuarz) && new Integer(0).equals(kJob.getJobQuartz())) {
             kJob.setJobQuartz(1);
         } else if (StringUtils.isBlank(customerQuarz) && kJob.getJobQuartz() == null) {
             kJob.setJobQuartz(1);
         }
-        kJobDao.insert(kJob);
+        kJobMapper.insert(kJob);
         DSTransactionManager.commit();
     }
 
@@ -202,7 +208,7 @@ public class JobService {
      * @Description 获取作业信息
      */
     public KJob getJob(Integer jobId) {
-        return kJobDao.single(jobId);
+        return kJobMapper.selectByPrimaryKey(jobId);
     }
 
     /**
@@ -216,10 +222,10 @@ public class JobService {
     public void update(KJob kJob, String customerQuarz, Integer uId) {
         if (StringUtils.isNotBlank(customerQuarz)) {
             Integer jobQuartzId = kJob.getJobQuartz();
-            KQuartz kQuartz = kQuartzDao.single(jobQuartzId);
+            KQuartz kQuartz = kQuartzMapper.selectByPrimaryKey(jobQuartzId);
             if (kQuartz.getAddUser() == uId) {// 如果更新前选择的是自定义的，这一步要更新
                 kQuartz.setQuartzCron(customerQuarz);
-                kQuartzDao.updateTemplateById(kQuartz);
+                kQuartzMapper.updateByPrimaryKey(kQuartz);
             } else {// 如果更新前选择的是默认的定时策略，这一步要新增一个定时策略
                 KQuartz kQuartzTemeplate = new KQuartz();
                 kQuartzTemeplate.setAddUser(uId);
@@ -229,12 +235,13 @@ public class JobService {
                 kQuartzTemeplate.setDelFlag(1);
                 kQuartzTemeplate.setQuartzCron(customerQuarz);
                 kQuartzTemeplate.setQuartzDescription(kJob.getJobName() + "的定时策略");
-                KeyHolder kQuartzKey = kQuartzDao.insertReturnKey(kQuartzTemeplate);
+                //KeyHolder kQuartzKey = kQuartzMapper.insert(kQuartzTemeplate);
+                kQuartzMapper.insert(kQuartzTemeplate);
                 //插入调度策略
-                kJob.setJobQuartz(kQuartzKey.getInt());
+                //kJob.setJobQuartz(kQuartzKey.getInt());
             }
         }
-        kJobDao.updateTemplateById(kJob);
+        kJobMapper.updateByPrimaryKey(kJob);
     }
 
 
@@ -247,9 +254,9 @@ public class JobService {
      */
     public void start(Integer jobId) {
         // 获取到作业对象
-        KJob kJob = kJobDao.unique(jobId);
+        KJob kJob = kJobMapper.selectByPrimaryKey(jobId);
         // 获取到定时策略对象
-        KQuartz kQuartz = kQuartzDao.unique(kJob.getJobQuartz());
+        KQuartz kQuartz = kQuartzMapper.selectByPrimaryKey(kJob.getJobQuartz());
         // 定时策略
         String quartzCron = kQuartz.getQuartzCron();
         // 用户ID
@@ -272,13 +279,13 @@ public class JobService {
             }
         } catch (Exception e) {
             kJob.setJobStatus(2);
-            kJobDao.updateTemplateById(kJob);
+            kJobMapper.updateByPrimaryKey(kJob);
             return;
         }
         // 添加监控
         addMonitor(userId, jobId, nextExecuteTime);
         kJob.setJobStatus(1);
-        kJobDao.updateTemplateById(kJob);
+        kJobMapper.updateByPrimaryKey(kJob);
     }
 
     /**
@@ -290,7 +297,7 @@ public class JobService {
      */
     public void stop(Integer jobId) {
         // 获取到作业对象
-        KJob kJob = kJobDao.unique(jobId);
+        KJob kJob = kJobMapper.selectByPrimaryKey(jobId);
         // 用户ID
         Integer userId = kJob.getAddUser();
         // 获取调度任务的基础信息
@@ -307,7 +314,7 @@ public class JobService {
         // 移除监控
         removeMonitor(userId, jobId);
         kJob.setJobStatus(2);
-        kJobDao.updateTemplateById(kJob);
+        kJobMapper.updateByPrimaryKey(kJob);
     }
 
     /**
@@ -356,7 +363,7 @@ public class JobService {
         Integer transRepositoryId = kJob.getJobRepositoryId();
         KRepository kRepository = null;
         if (transRepositoryId != null) {// 这里是判断是否为资源库中的转换还是文件类型的转换的关键点
-            kRepository = KRepositoryDao.single(transRepositoryId);
+            kRepository = kRepositoryMapper.selectByPrimaryKey(transRepositoryId);
         }
         // 资源库对象
         parameter.put(Constant.REPOSITORYOBJECT, kRepository);
@@ -395,7 +402,9 @@ public class JobService {
         KJobMonitor template = new KJobMonitor();
         template.setAddUser(userId);
         template.setMonitorJob(jobId);
-        KJobMonitor templateOne = kJobMonitorDao.templateOne(template);
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(userId).andMonitorJobEqualTo(jobId);
+        KJobMonitor templateOne = kJobMonitorMapper.selectOneByExample(example);
         if (null != templateOne) {
             templateOne.setMonitorStatus(1);
             StringBuilder runStatusBuilder = new StringBuilder();
@@ -403,7 +412,7 @@ public class JobService {
                     .append(",").append(new Date().getTime()).append(Constant.RUNSTATUS_SEPARATE);
             templateOne.setRunStatus(runStatusBuilder.toString());
             templateOne.setNextExecuteTime(nextExecuteTime);
-            kJobMonitorDao.updateTemplateById(templateOne);
+            kJobMonitorMapper.updateByPrimaryKey(templateOne);
         } else {
             KJobMonitor kJobMonitor = new KJobMonitor();
             kJobMonitor.setMonitorJob(jobId);
@@ -415,7 +424,7 @@ public class JobService {
             kJobMonitor.setRunStatus(runStatusBuilder.toString());
             kJobMonitor.setMonitorStatus(1);
             kJobMonitor.setNextExecuteTime(nextExecuteTime);
-            kJobMonitorDao.insert(kJobMonitor);
+            kJobMonitorMapper.insert(kJobMonitor);
         }
     }
 
@@ -430,13 +439,15 @@ public class JobService {
         KJobMonitor template = new KJobMonitor();
         template.setAddUser(userId);
         template.setMonitorJob(jobId);
-        KJobMonitor templateOne = kJobMonitorDao.templateOne(template);
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(userId).andMonitorJobEqualTo(jobId);
+        KJobMonitor templateOne = kJobMonitorMapper.selectOneByExample(example);
         templateOne.setMonitorStatus(2);
         StringBuilder runStatusBuilder = new StringBuilder();
         runStatusBuilder.append(templateOne.getRunStatus())
                 .append(new Date().getTime());
         templateOne.setRunStatus(runStatusBuilder.toString());
-        kJobMonitorDao.updateTemplateById(templateOne);
+        kJobMonitorMapper.updateByPrimaryKey(templateOne);
     }
 
     public void startAll(Integer categoryId, String jobName, Integer uId) {
@@ -450,7 +461,9 @@ public class JobService {
         if (StringUtils.isNotEmpty(jobName)) {
             template.setJobName(jobName);
         }
-        List<KJob> jobList = kJobDao.queryByCondition(template);
+        KJobExample example = new KJobExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andJobStatusEqualTo(2);
+        List<KJob> jobList = kJobMapper.selectByExample(example);
         for (KJob kJob : jobList) {
             start(kJob.getJobId());
         }
@@ -467,7 +480,9 @@ public class JobService {
         if (StringUtils.isNotEmpty(jobName)) {
             template.setJobName(jobName);
         }
-        List<KJob> jobList = kJobDao.queryByCondition(template);
+        KJobExample example = new KJobExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andJobStatusEqualTo(1);
+        List<KJob> jobList = kJobMapper.selectByExample(example);
         for (KJob kJob : jobList) {
             stop(kJob.getJobId());
         }
@@ -484,7 +499,9 @@ public class JobService {
         if (StringUtils.isNotEmpty(jobName)) {
             template.setJobName(jobName);
         }
-        Long startTaskCount = kJobDao.allCount(template);
+        KJobExample example = new KJobExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andJobStatusEqualTo(1);
+        Long startTaskCount = (long) kJobMapper.countByExample(example);
         return startTaskCount;
     }
 
@@ -499,15 +516,16 @@ public class JobService {
         if (StringUtils.isNotEmpty(jobName)) {
             template.setJobName(jobName);
         }
-        Long stopTaskCount = kJobDao.allCount(template);
+        KJobExample example = new KJobExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andJobStatusEqualTo(2);
+        Long stopTaskCount = (long) kJobMapper.countByExample(example);
         return stopTaskCount;
     }
     public String getJobRunState(Integer jobId){
         // 获取到作业对象
-        KJob kJob = kJobDao.unique(jobId);
+        KJob kJob = kJobMapper.selectByPrimaryKey(jobId);
         // 获取调度任务的基础信息
         Map<String, String> quartzBasic = getQuartzBasic(kJob);
-
         return QuartzManager.getTriggerState(quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
     }
 }

@@ -18,8 +18,6 @@ import com.dimensoft.core.dto.BootTablePage;
 import com.dimensoft.core.dto.ResultDto;
 import com.dimensoft.core.dto.kettle.RepositoryTree;
 import com.dimensoft.core.dto.web.KRepositoryDto;
-import com.dimensoft.core.model.KRepository;
-import com.dimensoft.core.model.KUser;
 import com.dimensoft.web.service.DataBaseRepositoryService;
 import com.dimensoft.web.utils.DataValidate;
 import com.dimensoft.web.utils.JsonUtils;

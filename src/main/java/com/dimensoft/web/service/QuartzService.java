@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.dimensoft.core.mapper.KQuartzMapper;
+import com.dimensoft.core.model.KQuartz;
+import com.dimensoft.core.model.KQuartzExample;
 import org.pentaho.di.core.exception.KettleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dimensoft.core.dto.BootTablePage;
-import com.dimensoft.core.mapper.KQuartzDao;
-import com.dimensoft.core.model.KQuartz;
 
 @Service
 public class QuartzService {
 
 	
 	@Autowired
-	private KQuartzDao kQuartzDao; 
+	private KQuartzMapper kQuartzMapper;
 	
 	/**
 	 * @Title getList
@@ -31,7 +32,9 @@ public class QuartzService {
 		KQuartz kQuartz = new KQuartz();
 		kQuartz.setDelFlag(1);
 		kQuartz.setAddUser(uId);
-		resultList.addAll(kQuartzDao.template(kQuartz));		
+        KQuartzExample example = new KQuartzExample();
+        example.createCriteria().andDelFlagEqualTo(1).andAddUserEqualTo(uId);
+		resultList.addAll(kQuartzMapper.selectByExample(example));
 		return resultList;
 	}
 	
@@ -49,8 +52,10 @@ public class QuartzService {
 		KQuartz kQuartz = new KQuartz();
 		kQuartz.setDelFlag(1);
 		kQuartz.setAddUser(uId);
-		List<KQuartz> kQuartzList = kQuartzDao.template(kQuartz, start, size);
-		long allCount = kQuartzDao.templateCount(kQuartz);
+        KQuartzExample example = new KQuartzExample();
+        example.createCriteria().andDelFlagEqualTo(1).andAddUserEqualTo(uId);
+		List<KQuartz> kQuartzList = kQuartzMapper.selectByExample(example);
+		long allCount = kQuartzMapper.countByExample(example);
 		BootTablePage bootTablePage = new BootTablePage();
 		bootTablePage.setRows(kQuartzList);
 		bootTablePage.setTotal(allCount);
@@ -64,7 +69,7 @@ public class QuartzService {
 	 * @return KQuartz
 	 */
 	public KQuartz getQuartz(Integer quartzId){
-		return kQuartzDao.single(quartzId);
+		return kQuartzMapper.selectByPrimaryKey(quartzId);
 	}
 
 	/**
@@ -80,7 +85,7 @@ public class QuartzService {
 		kQuartz.setEditTime(new Date());
 		kQuartz.setEditUser(uId);
 		kQuartz.setDelFlag(1);
-		kQuartzDao.insert(kQuartz);
+		kQuartzMapper.insert(kQuartz);
 	}
 	/**
 	 * @Title delete
@@ -89,9 +94,9 @@ public class QuartzService {
 	 * @return void
 	 */
 	public void delete(Integer quartzId){
-		KQuartz kQuartz = kQuartzDao.unique(quartzId);
+		KQuartz kQuartz = kQuartzMapper.selectByPrimaryKey(quartzId);
 		kQuartz.setDelFlag(0);
-		kQuartzDao.updateById(kQuartz);
+		kQuartzMapper.updateByPrimaryKey(kQuartz);
 	}
 
 	/**
@@ -105,6 +110,6 @@ public class QuartzService {
 		kQuartz.setEditTime(new Date());
 		kQuartz.setEditUser(uId);
 		//只有不为null的字段才参与更新
-		kQuartzDao.updateTemplateById(kQuartz);
+		kQuartzMapper.updateByPrimaryKey(kQuartz);
 	}
 }

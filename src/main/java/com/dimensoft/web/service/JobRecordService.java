@@ -4,20 +4,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import com.dimensoft.core.mapper.KJobRecordMapper;
+import com.dimensoft.core.model.KJobRecord;
+import com.dimensoft.core.model.KJobRecordExample;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.BootTablePage;
-import com.dimensoft.core.mapper.KJobRecordDao;
-import com.dimensoft.core.model.KJobRecord;
 
 @Service
 public class JobRecordService {
 
 	@Autowired
-	private KJobRecordDao kJobRecordDao;
+	private KJobRecordMapper kJobRecordMapper;
 	
 	/**
 	 * @Title getList
@@ -35,8 +36,10 @@ public class JobRecordService {
 		if (jobId != null){
 			template.setRecordJob(jobId);
 		}
-		List<KJobRecord> kJobRecordList = kJobRecordDao.template(template, start, size);
-		long totalCount = kJobRecordDao.templateCount(template);
+		KJobRecordExample example = new KJobRecordExample();
+		example.createCriteria().andAddUserEqualTo(uId);
+		List<KJobRecord> kJobRecordList = kJobRecordMapper.selectByExample(example);
+		long totalCount = kJobRecordMapper.countByExample(example);
 		BootTablePage bootTablePage = new BootTablePage();
 		bootTablePage.setRows(kJobRecordList);
 		bootTablePage.setTotal(totalCount);
@@ -52,7 +55,7 @@ public class JobRecordService {
 	 * @return String
 	 */
 	public String getLogContent(Integer jobId) throws IOException{
-		KJobRecord kJobRecord = kJobRecordDao.unique(jobId);
+		KJobRecord kJobRecord = kJobRecordMapper.selectByPrimaryKey(jobId);
 		String logFilePath = kJobRecord.getLogFilePath();
 		return FileUtils.readFileToString(new File(logFilePath), Constant.DEFAULT_ENCODING);
 	}

@@ -1,17 +1,17 @@
-package com.test.model;
+package com.dimensoft.core.model;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class KUSERExample {
+public class KQuartzExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public KUSERExample() {
+    public KQuartzExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -105,413 +105,203 @@ public class KUSERExample {
             criteria.add(new Criterion(condition, value1, value2));
         }
 
-        public Criteria andUIdIsNull() {
-            addCriterion("u_id is null");
+        public Criteria andQuartzIdIsNull() {
+            addCriterion("quartz_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andUIdIsNotNull() {
-            addCriterion("u_id is not null");
+        public Criteria andQuartzIdIsNotNull() {
+            addCriterion("quartz_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andUIdEqualTo(Integer value) {
-            addCriterion("u_id =", value, "uId");
+        public Criteria andQuartzIdEqualTo(Integer value) {
+            addCriterion("quartz_id =", value, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdNotEqualTo(Integer value) {
-            addCriterion("u_id <>", value, "uId");
+        public Criteria andQuartzIdNotEqualTo(Integer value) {
+            addCriterion("quartz_id <>", value, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdGreaterThan(Integer value) {
-            addCriterion("u_id >", value, "uId");
+        public Criteria andQuartzIdGreaterThan(Integer value) {
+            addCriterion("quartz_id >", value, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdGreaterThanOrEqualTo(Integer value) {
-            addCriterion("u_id >=", value, "uId");
+        public Criteria andQuartzIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("quartz_id >=", value, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdLessThan(Integer value) {
-            addCriterion("u_id <", value, "uId");
+        public Criteria andQuartzIdLessThan(Integer value) {
+            addCriterion("quartz_id <", value, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdLessThanOrEqualTo(Integer value) {
-            addCriterion("u_id <=", value, "uId");
+        public Criteria andQuartzIdLessThanOrEqualTo(Integer value) {
+            addCriterion("quartz_id <=", value, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdIn(List<Integer> values) {
-            addCriterion("u_id in", values, "uId");
+        public Criteria andQuartzIdIn(List<Integer> values) {
+            addCriterion("quartz_id in", values, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdNotIn(List<Integer> values) {
-            addCriterion("u_id not in", values, "uId");
+        public Criteria andQuartzIdNotIn(List<Integer> values) {
+            addCriterion("quartz_id not in", values, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdBetween(Integer value1, Integer value2) {
-            addCriterion("u_id between", value1, value2, "uId");
+        public Criteria andQuartzIdBetween(Integer value1, Integer value2) {
+            addCriterion("quartz_id between", value1, value2, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUIdNotBetween(Integer value1, Integer value2) {
-            addCriterion("u_id not between", value1, value2, "uId");
+        public Criteria andQuartzIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("quartz_id not between", value1, value2, "quartzId");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameIsNull() {
-            addCriterion("u_nickname is null");
+        public Criteria andQuartzDescriptionIsNull() {
+            addCriterion("quartz_description is null");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameIsNotNull() {
-            addCriterion("u_nickname is not null");
+        public Criteria andQuartzDescriptionIsNotNull() {
+            addCriterion("quartz_description is not null");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameEqualTo(String value) {
-            addCriterion("u_nickname =", value, "uNickname");
+        public Criteria andQuartzDescriptionEqualTo(String value) {
+            addCriterion("quartz_description =", value, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameNotEqualTo(String value) {
-            addCriterion("u_nickname <>", value, "uNickname");
+        public Criteria andQuartzDescriptionNotEqualTo(String value) {
+            addCriterion("quartz_description <>", value, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameGreaterThan(String value) {
-            addCriterion("u_nickname >", value, "uNickname");
+        public Criteria andQuartzDescriptionGreaterThan(String value) {
+            addCriterion("quartz_description >", value, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameGreaterThanOrEqualTo(String value) {
-            addCriterion("u_nickname >=", value, "uNickname");
+        public Criteria andQuartzDescriptionGreaterThanOrEqualTo(String value) {
+            addCriterion("quartz_description >=", value, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameLessThan(String value) {
-            addCriterion("u_nickname <", value, "uNickname");
+        public Criteria andQuartzDescriptionLessThan(String value) {
+            addCriterion("quartz_description <", value, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameLessThanOrEqualTo(String value) {
-            addCriterion("u_nickname <=", value, "uNickname");
+        public Criteria andQuartzDescriptionLessThanOrEqualTo(String value) {
+            addCriterion("quartz_description <=", value, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameLike(String value) {
-            addCriterion("u_nickname like", value, "uNickname");
+        public Criteria andQuartzDescriptionLike(String value) {
+            addCriterion("quartz_description like", value, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameNotLike(String value) {
-            addCriterion("u_nickname not like", value, "uNickname");
+        public Criteria andQuartzDescriptionNotLike(String value) {
+            addCriterion("quartz_description not like", value, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameIn(List<String> values) {
-            addCriterion("u_nickname in", values, "uNickname");
+        public Criteria andQuartzDescriptionIn(List<String> values) {
+            addCriterion("quartz_description in", values, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameNotIn(List<String> values) {
-            addCriterion("u_nickname not in", values, "uNickname");
+        public Criteria andQuartzDescriptionNotIn(List<String> values) {
+            addCriterion("quartz_description not in", values, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameBetween(String value1, String value2) {
-            addCriterion("u_nickname between", value1, value2, "uNickname");
+        public Criteria andQuartzDescriptionBetween(String value1, String value2) {
+            addCriterion("quartz_description between", value1, value2, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUNicknameNotBetween(String value1, String value2) {
-            addCriterion("u_nickname not between", value1, value2, "uNickname");
+        public Criteria andQuartzDescriptionNotBetween(String value1, String value2) {
+            addCriterion("quartz_description not between", value1, value2, "quartzDescription");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailIsNull() {
-            addCriterion("u_email is null");
+        public Criteria andQuartzCronIsNull() {
+            addCriterion("quartz_cron is null");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailIsNotNull() {
-            addCriterion("u_email is not null");
+        public Criteria andQuartzCronIsNotNull() {
+            addCriterion("quartz_cron is not null");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailEqualTo(String value) {
-            addCriterion("u_email =", value, "uEmail");
+        public Criteria andQuartzCronEqualTo(String value) {
+            addCriterion("quartz_cron =", value, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailNotEqualTo(String value) {
-            addCriterion("u_email <>", value, "uEmail");
+        public Criteria andQuartzCronNotEqualTo(String value) {
+            addCriterion("quartz_cron <>", value, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailGreaterThan(String value) {
-            addCriterion("u_email >", value, "uEmail");
+        public Criteria andQuartzCronGreaterThan(String value) {
+            addCriterion("quartz_cron >", value, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailGreaterThanOrEqualTo(String value) {
-            addCriterion("u_email >=", value, "uEmail");
+        public Criteria andQuartzCronGreaterThanOrEqualTo(String value) {
+            addCriterion("quartz_cron >=", value, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailLessThan(String value) {
-            addCriterion("u_email <", value, "uEmail");
+        public Criteria andQuartzCronLessThan(String value) {
+            addCriterion("quartz_cron <", value, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailLessThanOrEqualTo(String value) {
-            addCriterion("u_email <=", value, "uEmail");
+        public Criteria andQuartzCronLessThanOrEqualTo(String value) {
+            addCriterion("quartz_cron <=", value, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailLike(String value) {
-            addCriterion("u_email like", value, "uEmail");
+        public Criteria andQuartzCronLike(String value) {
+            addCriterion("quartz_cron like", value, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailNotLike(String value) {
-            addCriterion("u_email not like", value, "uEmail");
+        public Criteria andQuartzCronNotLike(String value) {
+            addCriterion("quartz_cron not like", value, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailIn(List<String> values) {
-            addCriterion("u_email in", values, "uEmail");
+        public Criteria andQuartzCronIn(List<String> values) {
+            addCriterion("quartz_cron in", values, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailNotIn(List<String> values) {
-            addCriterion("u_email not in", values, "uEmail");
+        public Criteria andQuartzCronNotIn(List<String> values) {
+            addCriterion("quartz_cron not in", values, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailBetween(String value1, String value2) {
-            addCriterion("u_email between", value1, value2, "uEmail");
+        public Criteria andQuartzCronBetween(String value1, String value2) {
+            addCriterion("quartz_cron between", value1, value2, "quartzCron");
             return (Criteria) this;
         }
 
-        public Criteria andUEmailNotBetween(String value1, String value2) {
-            addCriterion("u_email not between", value1, value2, "uEmail");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneIsNull() {
-            addCriterion("u_phone is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneIsNotNull() {
-            addCriterion("u_phone is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneEqualTo(String value) {
-            addCriterion("u_phone =", value, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneNotEqualTo(String value) {
-            addCriterion("u_phone <>", value, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneGreaterThan(String value) {
-            addCriterion("u_phone >", value, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneGreaterThanOrEqualTo(String value) {
-            addCriterion("u_phone >=", value, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneLessThan(String value) {
-            addCriterion("u_phone <", value, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneLessThanOrEqualTo(String value) {
-            addCriterion("u_phone <=", value, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneLike(String value) {
-            addCriterion("u_phone like", value, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneNotLike(String value) {
-            addCriterion("u_phone not like", value, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneIn(List<String> values) {
-            addCriterion("u_phone in", values, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneNotIn(List<String> values) {
-            addCriterion("u_phone not in", values, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneBetween(String value1, String value2) {
-            addCriterion("u_phone between", value1, value2, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPhoneNotBetween(String value1, String value2) {
-            addCriterion("u_phone not between", value1, value2, "uPhone");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountIsNull() {
-            addCriterion("u_account is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountIsNotNull() {
-            addCriterion("u_account is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountEqualTo(String value) {
-            addCriterion("u_account =", value, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountNotEqualTo(String value) {
-            addCriterion("u_account <>", value, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountGreaterThan(String value) {
-            addCriterion("u_account >", value, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountGreaterThanOrEqualTo(String value) {
-            addCriterion("u_account >=", value, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountLessThan(String value) {
-            addCriterion("u_account <", value, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountLessThanOrEqualTo(String value) {
-            addCriterion("u_account <=", value, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountLike(String value) {
-            addCriterion("u_account like", value, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountNotLike(String value) {
-            addCriterion("u_account not like", value, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountIn(List<String> values) {
-            addCriterion("u_account in", values, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountNotIn(List<String> values) {
-            addCriterion("u_account not in", values, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountBetween(String value1, String value2) {
-            addCriterion("u_account between", value1, value2, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUAccountNotBetween(String value1, String value2) {
-            addCriterion("u_account not between", value1, value2, "uAccount");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordIsNull() {
-            addCriterion("u_password is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordIsNotNull() {
-            addCriterion("u_password is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordEqualTo(String value) {
-            addCriterion("u_password =", value, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordNotEqualTo(String value) {
-            addCriterion("u_password <>", value, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordGreaterThan(String value) {
-            addCriterion("u_password >", value, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordGreaterThanOrEqualTo(String value) {
-            addCriterion("u_password >=", value, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordLessThan(String value) {
-            addCriterion("u_password <", value, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordLessThanOrEqualTo(String value) {
-            addCriterion("u_password <=", value, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordLike(String value) {
-            addCriterion("u_password like", value, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordNotLike(String value) {
-            addCriterion("u_password not like", value, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordIn(List<String> values) {
-            addCriterion("u_password in", values, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordNotIn(List<String> values) {
-            addCriterion("u_password not in", values, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordBetween(String value1, String value2) {
-            addCriterion("u_password between", value1, value2, "uPassword");
-            return (Criteria) this;
-        }
-
-        public Criteria andUPasswordNotBetween(String value1, String value2) {
-            addCriterion("u_password not between", value1, value2, "uPassword");
+        public Criteria andQuartzCronNotBetween(String value1, String value2) {
+            addCriterion("quartz_cron not between", value1, value2, "quartzCron");
             return (Criteria) this;
         }
 

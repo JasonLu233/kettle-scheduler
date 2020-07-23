@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dimensoft.common.toolkit.Constant;
-import com.dimensoft.core.model.KUser;
 import com.dimensoft.web.service.UserService;
 import com.dimensoft.web.utils.JsonUtils;
 

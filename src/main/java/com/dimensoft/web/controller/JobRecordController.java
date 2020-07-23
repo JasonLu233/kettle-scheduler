@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.BootTablePage;
 import com.dimensoft.core.dto.ResultDto;
-import com.dimensoft.core.model.KUser;
 import com.dimensoft.web.service.JobRecordService;
 import com.dimensoft.web.utils.JsonUtils;
 

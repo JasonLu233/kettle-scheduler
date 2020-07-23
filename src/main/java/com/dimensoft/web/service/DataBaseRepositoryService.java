@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.dimensoft.core.mapper.KRepositoryMapper;
+import com.dimensoft.core.mapper.KRepositoryTypeMapper;
+import com.dimensoft.core.model.KRepository;
+import com.dimensoft.core.model.KRepositoryExample;
+import com.dimensoft.core.model.KRepositoryType;
+import com.dimensoft.core.model.KRepositoryTypeExample;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +18,16 @@ import org.springframework.stereotype.Service;
 import com.dimensoft.common.kettle.repository.RepositoryUtil;
 import com.dimensoft.core.dto.BootTablePage;
 import com.dimensoft.core.dto.kettle.RepositoryTree;
-import com.dimensoft.core.mapper.KRepositoryDao;
-import com.dimensoft.core.mapper.KRepositoryTypeDao;
-import com.dimensoft.core.model.KRepository;
-import com.dimensoft.core.model.KRepositoryType;
 
 @Service
 public class DataBaseRepositoryService {
 
 	
 	@Autowired
-	private KRepositoryDao kRepositoryDao;
+	private KRepositoryMapper kRepositoryMapper;
 	
 	@Autowired
-	private KRepositoryTypeDao kRepositoryTypeDao; 
+	private KRepositoryTypeMapper kRepositoryTypeMapper;
 	
 	/**
 	 * @Title getRepositoryTreeList
@@ -41,7 +43,7 @@ public class DataBaseRepositoryService {
 		if (RepositoryUtil.KettleDatabaseRepositoryCatch.containsKey(repositoryId)){
 			kettleDatabaseRepository = RepositoryUtil.KettleDatabaseRepositoryCatch.get(repositoryId);
 		}else {
-			KRepository kRepository = kRepositoryDao.unique(repositoryId);
+			KRepository kRepository = kRepositoryMapper.selectByPrimaryKey(repositoryId);
 			kettleDatabaseRepository = RepositoryUtil.connectionRepository(kRepository);
 		}
 		if (null != kettleDatabaseRepository){
@@ -83,8 +85,10 @@ public class DataBaseRepositoryService {
 	public List<KRepository> getList(Integer uId) throws KettleException{
 		KRepository kRepository = new KRepository();
 		kRepository.setAddUser(uId);
-		kRepository.setDelFlag(1);		
-		return kRepositoryDao.template(kRepository);
+		kRepository.setDelFlag(1);
+		KRepositoryExample example = new KRepositoryExample();
+		example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+		return kRepositoryMapper.selectByExample(example);
 	}
 	
 	/**
@@ -99,9 +103,11 @@ public class DataBaseRepositoryService {
 	public BootTablePage getList(Integer start, Integer size, Integer uId){
 		KRepository kRepository = new KRepository();
 		kRepository.setAddUser(uId);
-		kRepository.setDelFlag(1);	
-		List<KRepository> kRepositoryList = kRepositoryDao.template(kRepository);
-		long allCount = kRepositoryDao.templateCount(kRepository);
+		kRepository.setDelFlag(1);
+		KRepositoryExample example = new KRepositoryExample();
+		example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+		List<KRepository> kRepositoryList = kRepositoryMapper.selectByExample(example);
+		long allCount = kRepositoryMapper.countByExample(example);
 		BootTablePage bootTablePage = new BootTablePage();
 		bootTablePage.setRows(kRepositoryList);
 		bootTablePage.setTotal(allCount);
@@ -115,7 +121,7 @@ public class DataBaseRepositoryService {
 	 * @return List<KRepositoryType>
 	 */
 	public List<KRepositoryType> getRepositoryTypeList(){
-		return kRepositoryTypeDao.all();
+		return kRepositoryTypeMapper.selectByExample(new KRepositoryTypeExample());
 	}
 	
 	/**
@@ -127,7 +133,7 @@ public class DataBaseRepositoryService {
 	 */
 	public KRepository getKRepository(Integer repositoryId){
 		//如果根据主键没有获取到对象，返回null
-		return kRepositoryDao.single(repositoryId);
+		return kRepositoryMapper.selectByPrimaryKey(repositoryId);
 	}
 	
 	/**
@@ -153,7 +159,7 @@ public class DataBaseRepositoryService {
 		kRepository.setEditTime(new Date());
 		kRepository.setEditUser(uId);
 		kRepository.setDelFlag(1);
-		kRepositoryDao.insert(kRepository);
+		kRepositoryMapper.insert(kRepository);
 	}
 	
 	/**
@@ -167,7 +173,7 @@ public class DataBaseRepositoryService {
 		kRepository.setEditTime(new Date());
 		kRepository.setEditUser(uId);
 		//只有不为null的字段才参与更新
-		kRepositoryDao.updateTemplateById(kRepository);
+		kRepositoryMapper.updateByPrimaryKey(kRepository);
 	}
 	/**
 	 * @Title delete
@@ -176,8 +182,8 @@ public class DataBaseRepositoryService {
 	 * @return void
 	 */
 	public void delete(Integer repositoryId){
-		KRepository kRepository = kRepositoryDao.unique(repositoryId);
+		KRepository kRepository = kRepositoryMapper.selectByPrimaryKey(repositoryId);
 		kRepository.setDelFlag(0);
-		kRepositoryDao.updateById(kRepository);
+		kRepositoryMapper.updateByPrimaryKey(kRepository);
 	}
 }

@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dimensoft.core.mapper.KQuartzMapper;
+import com.dimensoft.core.mapper.KRepositoryMapper;
+import com.dimensoft.core.mapper.KTransMapper;
+import com.dimensoft.core.mapper.KTransMonitorMapper;
+import com.dimensoft.core.model.*;
 import org.apache.commons.lang.StringUtils;
 import org.beetl.sql.core.DSTransactionManager;
 import org.beetl.sql.core.db.KeyHolder;
@@ -17,14 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.BootTablePage;
-import com.dimensoft.core.mapper.KQuartzDao;
-import com.dimensoft.core.mapper.KRepositoryDao;
-import com.dimensoft.core.mapper.KTransDao;
-import com.dimensoft.core.mapper.KTransMonitorDao;
-import com.dimensoft.core.model.KQuartz;
-import com.dimensoft.core.model.KRepository;
-import com.dimensoft.core.model.KTrans;
-import com.dimensoft.core.model.KTransMonitor;
 import com.dimensoft.web.quartz.QuartzManager;
 import com.dimensoft.web.quartz.TransQuartz;
 import com.dimensoft.web.quartz.model.DBConnectionModel;
@@ -34,16 +31,16 @@ import com.dimensoft.web.utils.CommonUtils;
 public class TransService {
 
     @Autowired
-    private KTransDao kTransDao;
+    private KTransMapper kTransMapper;
 
     @Autowired
-    private KQuartzDao kQuartzDao;
+    private KQuartzMapper kQuartzMapper;
 
     @Autowired
-    private KRepositoryDao KRepositoryDao;
+    private KRepositoryMapper kRepositoryMapper;
 
     @Autowired
-    private KTransMonitorDao kTransMonitorDao;
+    private KTransMonitorMapper kTransMonitorMapper;
 
     @Value("${kettle.log.file.path}")
     private String kettleLogFilePath;
@@ -70,10 +67,12 @@ public class TransService {
      * @Description 获取列表
      */
     public List<KTrans> getList(Integer uId) {
-        KTrans template = new KTrans();
-        template.setAddUser(uId);
-        template.setDelFlag(1);
-        return kTransDao.template(template);
+//        KTrans template = new KTrans();
+//        template.setAddUser(uId);
+//        template.setDelFlag(1);
+        KTransExample example = new KTransExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+        return kTransMapper.selectByExample(example);
     }
 
     /**
@@ -94,10 +93,12 @@ public class TransService {
         if (StringUtils.isNotEmpty(transName)) {
             template.setTransName(transName);
         }
-//		List<KTrans> kTransList = kTransDao.template(template, start, size);
-//		Long allCount = kTransDao.templateCount(template);
-        List<KTrans> kTransList = kTransDao.pageQuery(template, start, size);
-        Long allCount = kTransDao.allCount(template);
+//		List<KTrans> kTransList = kTransMapper.template(template, start, size);
+//		Long allCount = kTransMapper.templateCount(template);
+        KTransExample example = new KTransExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+        List<KTrans> kTransList = kTransMapper.selectByExample(example);
+        Long allCount = (long)kTransMapper.countByExample(example);
         BootTablePage bootTablePage = new BootTablePage();
         bootTablePage.setRows(kTransList);
         bootTablePage.setTotal(allCount);
@@ -111,9 +112,9 @@ public class TransService {
      * @Description 删除转换
      */
     public void delete(Integer kTransId) {
-        KTrans kTrans = kTransDao.unique(kTransId);
+        KTrans kTrans = kTransMapper.selectByPrimaryKey(kTransId);
         kTrans.setDelFlag(0);
-        kTransDao.updateById(kTrans);
+        kTransMapper.updateByPrimaryKey(kTrans);
     }
 
     /**
@@ -130,7 +131,9 @@ public class TransService {
         template.setAddUser(uId);
         template.setTransRepositoryId(repositoryId);
         template.setTransPath(kTransPath);
-        List<KTrans> kTransList = kTransDao.template(template);
+        KTransExample example = new KTransExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andTransRepositoryIdEqualTo(repositoryId).andTransPathEqualTo(kTransPath);
+        List<KTrans> kTransList = kTransMapper.selectByExample(example);
         if (null != kTransList && kTransList.size() > 0) {
             return false;
         } else {
@@ -181,15 +184,16 @@ public class TransService {
             kQuartz.setDelFlag(1);
             kQuartz.setQuartzCron(customerQuarz);
             kQuartz.setQuartzDescription(kTrans.getTransName() + "的定时策略");
-            KeyHolder kQuartzKey = kQuartzDao.insertReturnKey(kQuartz);
+            kQuartzMapper.insert(kQuartz);
+            //KeyHolder kQuartzKey = kQuartzMapper.insertReturnKey(kQuartz);
             //插入调度策略
-            kTrans.setTransQuartz(kQuartzKey.getInt());
+            //kTrans.setTransQuartz(kQuartzKey.getInt());
         } else if (StringUtils.isBlank(customerQuarz) && new Integer(0).equals(kTrans.getTransQuartz())) {
             kTrans.setTransQuartz(1);
         } else if (StringUtils.isBlank(customerQuarz) && kTrans.getTransQuartz() == null) {
             kTrans.setTransQuartz(1);
         }
-        kTransDao.insert(kTrans);
+        kTransMapper.insert(kTrans);
         DSTransactionManager.commit();
     }
 
@@ -200,7 +204,7 @@ public class TransService {
      * @Description 获取转换对象
      */
     public KTrans getTrans(Integer transId) {
-        return kTransDao.single(transId);
+        return kTransMapper.selectByPrimaryKey(transId);
     }
 
     /**
@@ -214,10 +218,10 @@ public class TransService {
     public void update(KTrans kTrans, String customerQuarz, Integer uId) {
         if (StringUtils.isNotBlank(customerQuarz)) {
             Integer transQuartzId = kTrans.getTransQuartz();
-            KQuartz kQuartz = kQuartzDao.single(transQuartzId);
+            KQuartz kQuartz = kQuartzMapper.selectByPrimaryKey(transQuartzId);
             if (kQuartz.getAddUser() == uId) {// 如果更新前选择的是自定义的，这一步要更新
                 kQuartz.setQuartzCron(customerQuarz);
-                kQuartzDao.updateTemplateById(kQuartz);
+                kQuartzMapper.updateByPrimaryKey(kQuartz);
             } else {// 如果更新前选择的是默认的定时策略，这一步要新增一个定时策略
                 KQuartz kQuartzTemeplate = new KQuartz();
                 kQuartzTemeplate.setAddUser(uId);
@@ -227,12 +231,13 @@ public class TransService {
                 kQuartzTemeplate.setDelFlag(1);
                 kQuartzTemeplate.setQuartzCron(customerQuarz);
                 kQuartzTemeplate.setQuartzDescription(kTrans.getTransName() + "的定时策略");
-                KeyHolder kQuartzKey = kQuartzDao.insertReturnKey(kQuartzTemeplate);
+                //KeyHolder kQuartzKey = kQuartzMapper.insertReturnKey(kQuartzTemeplate);
+                kQuartzMapper.insert(kQuartzTemeplate);
                 //插入调度策略
-                kTrans.setTransQuartz(kQuartzKey.getInt());
+                //kTrans.setTransQuartz(kQuartzKey.getInt());
             }
         }
-        kTransDao.updateTemplateById(kTrans);
+        kTransMapper.updateByPrimaryKey(kTrans);
     }
 
     /**
@@ -243,9 +248,9 @@ public class TransService {
      */
     public void start(Integer transId) {
         // 获取到转换对象
-        KTrans kTrans = kTransDao.unique(transId);
+        KTrans kTrans = kTransMapper.selectByPrimaryKey(transId);
         // 获取到定时策略对象
-        KQuartz kQuartz = kQuartzDao.unique(kTrans.getTransQuartz());
+        KQuartz kQuartz = kQuartzMapper.selectByPrimaryKey(kTrans.getTransQuartz());
         // 定时策略
         String quartzCron = kQuartz.getQuartzCron();
         // 用户ID
@@ -270,13 +275,13 @@ public class TransService {
             }
         } catch (Exception e) {
             kTrans.setTransStatus(2);
-            kTransDao.updateTemplateById(kTrans);
+            kTransMapper.updateByPrimaryKey(kTrans);
             return;
         }
         // 添加监控
         addMonitor(userId, transId, nextExecuteTime);
         kTrans.setTransStatus(1);
-        kTransDao.updateTemplateById(kTrans);
+        kTransMapper.updateByPrimaryKey(kTrans);
     }
 
     /**
@@ -287,7 +292,7 @@ public class TransService {
      */
     public void stop(Integer transId) {
         // 获取到作业对象
-        KTrans kTrans = kTransDao.unique(transId);
+        KTrans kTrans = kTransMapper.selectByPrimaryKey(transId);
         // 用户ID
         Integer userId = kTrans.getAddUser();
         // 获取Quartz执行的基础信息
@@ -305,7 +310,7 @@ public class TransService {
         removeMonitor(userId, transId);
         // 更新任务状态
         kTrans.setTransStatus(2);
-        kTransDao.updateTemplateById(kTrans);
+        kTransMapper.updateByPrimaryKey(kTrans);
     }
 
     /**
@@ -354,7 +359,7 @@ public class TransService {
         Integer transRepositoryId = kTrans.getTransRepositoryId();
         KRepository kRepository = null;
         if (transRepositoryId != null) {// 这里是判断是否为资源库中的转换还是文件类型的转换的关键点
-            kRepository = KRepositoryDao.single(transRepositoryId);
+            kRepository = kRepositoryMapper.selectByPrimaryKey(transRepositoryId);
         }
         // 资源库对象
         parameter.put(Constant.REPOSITORYOBJECT, kRepository);
@@ -392,7 +397,9 @@ public class TransService {
         KTransMonitor template = new KTransMonitor();
         template.setAddUser(userId);
         template.setMonitorTrans(transId);
-        KTransMonitor templateOne = kTransMonitorDao.templateOne(template);
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(userId).andMonitorTransEqualTo(transId);
+        KTransMonitor templateOne = kTransMonitorMapper.selectOneByExample(example);
         if (null != templateOne) {
             templateOne.setMonitorStatus(1);
             StringBuilder runStatusBuilder = new StringBuilder();
@@ -400,7 +407,7 @@ public class TransService {
                     .append(",").append(new Date().getTime()).append(Constant.RUNSTATUS_SEPARATE);
             templateOne.setRunStatus(runStatusBuilder.toString());
             templateOne.setNextExecuteTime(nextExecuteTime);
-            kTransMonitorDao.updateTemplateById(templateOne);
+            kTransMonitorMapper.updateByPrimaryKey(templateOne);
         } else {
             KTransMonitor kTransMonitor = new KTransMonitor();
             kTransMonitor.setMonitorTrans(transId);
@@ -412,7 +419,7 @@ public class TransService {
             kTransMonitor.setRunStatus(runStatusBuilder.toString());
             kTransMonitor.setMonitorStatus(1);
             kTransMonitor.setNextExecuteTime(nextExecuteTime);
-            kTransMonitorDao.insert(kTransMonitor);
+            kTransMonitorMapper.insert(kTransMonitor);
         }
     }
 
@@ -427,13 +434,14 @@ public class TransService {
         KTransMonitor template = new KTransMonitor();
         template.setAddUser(userId);
         template.setMonitorTrans(transId);
-        KTransMonitor templateOne = kTransMonitorDao.templateOne(template);
-        templateOne.setMonitorStatus(2);
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(userId).andMonitorTransEqualTo(transId);
+        KTransMonitor templateOne = kTransMonitorMapper.selectOneByExample(example);
         StringBuilder runStatusBuilder = new StringBuilder();
         runStatusBuilder.append(templateOne.getRunStatus())
                 .append(new Date().getTime());
         templateOne.setRunStatus(runStatusBuilder.toString());
-        kTransMonitorDao.updateTemplateById(templateOne);
+        kTransMonitorMapper.updateByPrimaryKey(templateOne);
     }
 
     public void startAll(Integer CategoryId, String transName, Integer uId) {
@@ -447,7 +455,9 @@ public class TransService {
         if (StringUtils.isNotEmpty(transName)) {
             template.setTransName(transName);
         }
-        List<KTrans> jobList = kTransDao.queryByCondition(template);
+        KTransExample example = new KTransExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andTransStatusEqualTo(2);
+        List<KTrans> jobList = kTransMapper.selectByExample(example);
         for (KTrans KTrans : jobList) {
             start(KTrans.getTransId());
         }
@@ -464,7 +474,9 @@ public class TransService {
         if (StringUtils.isNotEmpty(transName)) {
             template.setTransName(transName);
         }
-        List<KTrans> jobList = kTransDao.queryByCondition(template);
+        KTransExample example = new KTransExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andTransStatusEqualTo(1);
+        List<KTrans> jobList = kTransMapper.selectByExample(example);
         for (KTrans KTrans : jobList) {
             stop(KTrans.getTransId());
         }
@@ -481,7 +493,9 @@ public class TransService {
         if (StringUtils.isNotEmpty(transName)) {
             template.setTransName(transName);
         }
-        Long startTaskCount = kTransDao.allCount(template);
+        KTransExample example = new KTransExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andTransStatusEqualTo(1);
+        Long startTaskCount = (long)kTransMapper.countByExample(example);
         return startTaskCount;
     }
 
@@ -496,12 +510,14 @@ public class TransService {
         if (StringUtils.isNotEmpty(transName)) {
             template.setTransName(transName);
         }
-        Long stopTaskCount = kTransDao.allCount(template);
+        KTransExample example = new KTransExample();
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1).andTransStatusEqualTo(2);
+        Long stopTaskCount = (long)kTransMapper.countByExample(example);
         return stopTaskCount;
     }
     public String getTransRunState(Integer transId){
         // 获取到作业对象
-        KTrans kTrans = kTransDao.unique(transId);
+        KTrans kTrans = kTransMapper.selectByPrimaryKey(transId);
         // 获取Quartz执行的基础信息
         Map<String, String> quartzBasic = getQuartzBasic(kTrans);
 

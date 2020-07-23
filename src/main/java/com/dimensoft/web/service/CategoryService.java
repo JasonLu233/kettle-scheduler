@@ -1,8 +1,9 @@
 package com.dimensoft.web.service;
 
 import com.dimensoft.core.dto.BootTablePage;
-import com.dimensoft.core.mapper.KCategoryDao;
+import com.dimensoft.core.mapper.KCategoryMapper;
 import com.dimensoft.core.model.KCategory;
+import com.dimensoft.core.model.KCategoryExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +14,16 @@ import java.util.List;
 @Service
 public class CategoryService {
     @Autowired
-    private KCategoryDao kCategoryDao;
+    private KCategoryMapper kCategoryMapper;
   
     public List<KCategory> getList(Integer uId){
         List<KCategory> resultList = new ArrayList<KCategory>();
         KCategory kCategory = new KCategory();
         kCategory.setDelFlag(1);
         kCategory.setAddUser(uId);
-        resultList.addAll(kCategoryDao.template(kCategory));
+        KCategoryExample example = new KCategoryExample();
+        example.createCriteria().andDelFlagEqualTo(1).andAddUserEqualTo(uId);
+        resultList.addAll(kCategoryMapper.selectByExample(example));
         return resultList;
     }
     
@@ -28,8 +31,10 @@ public class CategoryService {
         KCategory kCategory = new KCategory();
         kCategory.setDelFlag(1);
         kCategory.setAddUser(uId);
-        List<KCategory> kQuartzList = kCategoryDao.template(kCategory, start, size);
-        long allCount = kCategoryDao.templateCount(kCategory);
+        KCategoryExample example = new KCategoryExample();
+        example.createCriteria().andDelFlagEqualTo(1).andAddUserEqualTo(uId);
+        List<KCategory> kQuartzList = kCategoryMapper.selectByExample(example);
+        long allCount = kCategoryMapper.countByExample(example);
         BootTablePage bootTablePage = new BootTablePage();
         bootTablePage.setRows(kQuartzList);
         bootTablePage.setTotal(allCount);
@@ -37,7 +42,7 @@ public class CategoryService {
     }
  
     public KCategory getQuartz(Integer categoryId){
-        return kCategoryDao.single(categoryId);
+        return kCategoryMapper.selectByPrimaryKey(categoryId);
     }
     
     public void insert(KCategory kCategory, Integer uId){
@@ -46,13 +51,13 @@ public class CategoryService {
         kCategory.setEditTime(new Date());
         kCategory.setEditUser(uId);
         kCategory.setDelFlag(1);
-        kCategoryDao.insert(kCategory);
+        kCategoryMapper.insert(kCategory);
     }
 
     public void delete(Integer categoryId){
-        KCategory kCategory = kCategoryDao.unique(categoryId);
+        KCategory kCategory = kCategoryMapper.selectByPrimaryKey(categoryId);
         kCategory.setDelFlag(0);
-        kCategoryDao.updateById(kCategory);
+        kCategoryMapper.updateByPrimaryKey(kCategory);
     }
 
  
@@ -60,14 +65,16 @@ public class CategoryService {
         kCategory.setEditTime(new Date());
         kCategory.setEditUser(uId);
         //只有不为null的字段才参与更新
-        kCategoryDao.updateTemplateById(kCategory);
+        kCategoryMapper.updateByPrimaryKey(kCategory);
     }
 
     public boolean IsCategoryExist(Integer categoryId,String categoryName) {
         KCategory template = new KCategory();
         template.setDelFlag(1);
         template.setCategoryName(categoryName);
-        KCategory category = kCategoryDao.templateOne(template);
+        KCategoryExample example = new KCategoryExample();
+        example.createCriteria().andDelFlagEqualTo(1).andCategoryNameEqualTo(categoryName);
+        KCategory category = kCategoryMapper.selectOneByExample(example);
         if (null == category) {
             return false;
         } else if(categoryId!=null&&category.getCategoryId()==categoryId){

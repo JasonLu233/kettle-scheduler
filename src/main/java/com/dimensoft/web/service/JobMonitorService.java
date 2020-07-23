@@ -6,21 +6,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dimensoft.core.mapper.KJobMonitorMapper;
+import com.dimensoft.core.model.KJobMonitor;
+import com.dimensoft.core.model.KJobMonitorExample;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.core.dto.BootTablePage;
-import com.dimensoft.core.mapper.KJobMonitorDao;
-import com.dimensoft.core.model.KJobMonitor;
 import com.dimensoft.web.utils.CommonUtils;
 
 @Service
 public class JobMonitorService {
 
     @Autowired
-    private KJobMonitorDao kJobMonitorDao;
+    private KJobMonitorMapper kJobMonitorMapper;
 
     /**
      * @param start 起始行数
@@ -35,10 +36,12 @@ public class JobMonitorService {
         template.setAddUser(uId);
         template.setMonitorStatus(monitorStatus);
         if(StringUtils.isNotEmpty(jobName)){
-            template.setJobName(jobName);
+            //template.setJobName(jobName);
         }
-        List<KJobMonitor> kJobMonitorList = kJobMonitorDao.pageQuery(template, start, size,categoryId);
-        Long allCount = kJobMonitorDao.allCount(template,categoryId);
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(monitorStatus);
+        List<KJobMonitor> kJobMonitorList = kJobMonitorMapper.selectByExample(example);
+        int allCount = kJobMonitorMapper.countByExample(example);
         BootTablePage bootTablePage = new BootTablePage();
         bootTablePage.setRows(kJobMonitorList);
         bootTablePage.setTotal(allCount);
@@ -55,8 +58,10 @@ public class JobMonitorService {
         KJobMonitor template = new KJobMonitor();
         template.setAddUser(uId);
         template.setMonitorStatus(1);
-        List<KJobMonitor> kJobMonitorList = kJobMonitorDao.template(template);
-        Collections.sort(kJobMonitorList);
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(1);
+        List<KJobMonitor> kJobMonitorList = kJobMonitorMapper.selectByExample(example);
+        //Collections.sort(kJobMonitorList);
         List<KJobMonitor> newKJobMonitorList = new ArrayList<KJobMonitor>();
         if (kJobMonitorList.size() >= 5) {
             newKJobMonitorList = kJobMonitorList.subList(0, 5);
@@ -79,7 +84,9 @@ public class JobMonitorService {
         KJobMonitor template = new KJobMonitor();
         template.setAddUser(uId);
         template.setMonitorStatus(1);
-        List<KJobMonitor> kJobMonitorList = kJobMonitorDao.template(template);
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(1);
+        List<KJobMonitor> kJobMonitorList = kJobMonitorMapper.selectByExample(example);
         return kJobMonitorList.size();
     }
 
@@ -93,7 +100,9 @@ public class JobMonitorService {
         KJobMonitor template = new KJobMonitor();
         template.setAddUser(uId);
         template.setMonitorStatus(1);
-        List<KJobMonitor> kJobMonitorList = kJobMonitorDao.template(template);
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(1);
+        List<KJobMonitor> kJobMonitorList = kJobMonitorMapper.selectByExample(example);
         Integer allSuccess = 0;
         for (KJobMonitor KJobMonitor : kJobMonitorList) {
             allSuccess += KJobMonitor.getMonitorSuccess();
@@ -111,7 +120,9 @@ public class JobMonitorService {
         KJobMonitor template = new KJobMonitor();
         template.setAddUser(uId);
         template.setMonitorStatus(1);
-        List<KJobMonitor> kJobMonitorList = kJobMonitorDao.template(template);
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId).andMonitorStatusEqualTo(1);
+        List<KJobMonitor> kJobMonitorList = kJobMonitorMapper.selectByExample(example);
         Integer allSuccess = 0;
         for (KJobMonitor KJobMonitor : kJobMonitorList) {
             allSuccess += KJobMonitor.getMonitorFail();
@@ -128,7 +139,9 @@ public class JobMonitorService {
     public Map<String, Object> getJobLine(Integer uId) {
         KJobMonitor template = new KJobMonitor();
         template.setAddUser(uId);
-        List<KJobMonitor> kJobMonitorList = kJobMonitorDao.template(template);
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(uId);
+        List<KJobMonitor> kJobMonitorList = kJobMonitorMapper.selectByExample(example);
         HashMap<String, Object> resultMap = new HashMap<String, Object>();
         List<Integer> resultList = new ArrayList<Integer>();
         for (int i = 0; i < 7; i++) {

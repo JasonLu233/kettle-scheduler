@@ -13,11 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.dimensoft.core.mapper.KJobRecordDao;
-import com.dimensoft.core.mapper.KTransRecordDao;
-import com.dimensoft.core.model.KJobRecord;
-import com.dimensoft.core.model.KTransRecord;
-
 @Controller
 @RequestMapping("/download/")
 public class DownLoadRecordController {
