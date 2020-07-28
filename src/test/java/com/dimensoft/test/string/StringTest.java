@@ -20,6 +20,8 @@ public class StringTest {
 		int lastIndexOf = StringUtils.lastIndexOf(aaa, "/");
 		System.out.println(aaa.substring(0, lastIndexOf));
 		System.out.println(aaa.substring(lastIndexOf + 1, aaa.length()));
+
+
 	}
 	
 	

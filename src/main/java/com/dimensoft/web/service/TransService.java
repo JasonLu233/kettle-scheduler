@@ -12,6 +12,7 @@ import com.dimensoft.core.mapper.KRepositoryMapper;
 import com.dimensoft.core.mapper.KTransMapper;
 import com.dimensoft.core.mapper.KTransMonitorMapper;
 import com.dimensoft.core.model.*;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,16 +86,19 @@ public class TransService {
         KTrans template = new KTrans();
         template.setAddUser(uId);
         template.setDelFlag(1);
+        KTransExample example = new KTransExample();
         if (CategoryId != null) {
-            template.setCategoryId(CategoryId);
+            example.createCriteria().andCategoryIdEqualTo(CategoryId);
+            //template.setCategoryId(CategoryId);
         }
         if (StringUtils.isNotEmpty(transName)) {
+            example.createCriteria().andTransNameEqualTo(transName);
             template.setTransName(transName);
         }
 //		List<KTrans> kTransList = kTransMapper.template(template, start, size);
 //		Long allCount = kTransMapper.templateCount(template);
-        KTransExample example = new KTransExample();
         example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+        PageHelper.offsetPage(start, size);
         List<KTrans> kTransList = kTransMapper.selectByExample(example);
         Long allCount = (long)kTransMapper.countByExample(example);
         BootTablePage bootTablePage = new BootTablePage();
@@ -185,7 +189,7 @@ public class TransService {
             kQuartzMapper.insert(kQuartz);
             //KeyHolder kQuartzKey = kQuartzMapper.insertReturnKey(kQuartz);
             //插入调度策略
-            //kTrans.setTransQuartz(kQuartzKey.getInt());
+            kTrans.setTransQuartz(kQuartz.getQuartzId());
         } else if (StringUtils.isBlank(customerQuarz) && new Integer(0).equals(kTrans.getTransQuartz())) {
             kTrans.setTransQuartz(1);
         } else if (StringUtils.isBlank(customerQuarz) && kTrans.getTransQuartz() == null) {
@@ -232,7 +236,8 @@ public class TransService {
                 //KeyHolder kQuartzKey = kQuartzMapper.insertReturnKey(kQuartzTemeplate);
                 kQuartzMapper.insert(kQuartzTemeplate);
                 //插入调度策略
-                //kTrans.setTransQuartz(kQuartzKey.getInt());
+                kTrans.setTransQuartz(kQuartzTemeplate.getQuartzId());
+
             }
         }
         kTransMapper.updateByPrimaryKey(kTrans);

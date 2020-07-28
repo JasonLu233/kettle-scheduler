@@ -27,4 +27,6 @@ public interface KTransMapper {
     int updateByPrimaryKeySelective(KTrans record);
 
     int updateByPrimaryKey(KTrans record);
+
+    List<KTrans> selectByExample(KTransExample example,@Param("pageNum") int pageNum,@Param("pageSize") int pageSize);
 }

@@ -103,7 +103,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.dimensoft.core.model.KQuartz" >
+  <insert id="insert" useGeneratedKeys="true" keyProperty="quartz_id" keyColumn="quartz_id" parameterType="com.dimensoft.core.model.KQuartz" >
     insert into k_quartz (quartz_id, quartz_description, quartz_cron, 
       add_time, add_user, edit_time, 
       edit_user, del_flag)

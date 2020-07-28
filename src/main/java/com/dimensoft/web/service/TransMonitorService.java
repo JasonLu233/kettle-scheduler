@@ -48,6 +48,7 @@ public class TransMonitorService {
         return bootTablePage;
     }
 
+
     /**
      * @param start 起始行数
      * @param size  每页数据条数
@@ -93,7 +94,7 @@ public class TransMonitorService {
     }
 
     /**
-     * @param uId 用户ID
+     * @param uId 用户I
      * @return Integer
      * @Title getAllSuccess
      * @Description 获取所有转换执行成功的次数的和

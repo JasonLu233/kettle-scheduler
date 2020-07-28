@@ -12,6 +12,7 @@ import com.dimensoft.core.mapper.KJobMonitorMapper;
 import com.dimensoft.core.mapper.KQuartzMapper;
 import com.dimensoft.core.mapper.KRepositoryMapper;
 import com.dimensoft.core.model.*;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,18 +73,21 @@ public class JobService {
         KJob template = new KJob();
         template.setAddUser(uId);
         template.setDelFlag(1);
+        KJobExample example = new KJobExample();
         if (categoryId != null) {
+            example.createCriteria().andCategoryIdEqualTo(categoryId);
             template.setCategoryId(categoryId);
         }
         if (StringUtils.isNotEmpty(jobName)) {
+            example.createCriteria().andJobNameEqualTo(jobName);
             template.setJobName(jobName);
         }
 //		List<KJob> kJobList = kJobMapper.template(template, start, size);
 //		Long allCount = kJobMapper.templateCount(template);
 
-        KJobExample example = new KJobExample();
-        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
 
+        example.createCriteria().andAddUserEqualTo(uId).andDelFlagEqualTo(1);
+        PageHelper.offsetPage(start, size);
         List<KJob> kJobList = kJobMapper.selectByExample(example);
         int allCount = kJobMapper.countByExample(example);
         BootTablePage bootTablePage = new BootTablePage();
@@ -189,7 +193,7 @@ public class JobService {
             //KeyHolder kQuartzKey = kQuartzMapper.insertReturnKey(kQuartz);
             kQuartzMapper.insert(kQuartz);
             //插入调度策略
-            //kJob.setJobQuartz(kQuartzKey.getInt());
+            kJob.setJobQuartz(kQuartz.getQuartzId());
         } else if (StringUtils.isBlank(customerQuarz) && new Integer(0).equals(kJob.getJobQuartz())) {
             kJob.setJobQuartz(1);
         } else if (StringUtils.isBlank(customerQuarz) && kJob.getJobQuartz() == null) {

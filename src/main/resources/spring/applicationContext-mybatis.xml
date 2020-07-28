@@ -48,7 +48,18 @@
 		<property name="typeAliasesPackage"
 				  value="com.dimensoft.core.model" />
 
-
+		<!-- 注意其他配置 -->
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<!--使用下面的方式配置参数，一行配置一个 -->
+						<value>
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
 
 	</bean>
 
@@ -56,6 +67,7 @@
 		<!--mapper接口所在的包-->
 		<property name="basePackage" value="com.dimensoft.core.mapper" />
 	</bean>
+
 
 
 </beans>
