@@ -30,6 +30,8 @@ import com.dimensoft.web.utils.CommonUtils;
 @Service
 public class JobService {
 
+    @Autowired
+    private QuartzManager quartzManager;
 
     @Autowired
     private KJobMapper kJobMapper;
@@ -271,11 +273,11 @@ public class JobService {
         try {
             // 判断作业执行类型
             if (new Integer(1).equals(kJob.getJobQuartz())) {//如果是只执行一次
-                nextExecuteTime = QuartzManager.addOnceJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
+                nextExecuteTime = quartzManager.addOnceJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
                         quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"), JobQuartz.class, quartzParameter);
             } else {// 如果是按照策略执行
                 //添加任务
-                nextExecuteTime = QuartzManager.addJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
+                nextExecuteTime = quartzManager.addJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
                         quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"),
                         JobQuartz.class, quartzCron, quartzParameter);
             }
@@ -306,11 +308,11 @@ public class JobService {
         Map<String, String> quartzBasic = getQuartzBasic(kJob);
         if (new Integer(1).equals(kJob.getJobQuartz())) {//如果是只执行一次
             // 一次性执行任务，不允许手动停止
-            QuartzManager.removeJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
+            quartzManager.removeJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
                     quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
         } else {// 如果是按照策略执行
             //移除任务
-            QuartzManager.removeJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
+            quartzManager.removeJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
                     quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
         }
         // 移除监控
@@ -528,6 +530,6 @@ public class JobService {
         KJob kJob = kJobMapper.selectByPrimaryKey(jobId);
         // 获取调度任务的基础信息
         Map<String, String> quartzBasic = getQuartzBasic(kJob);
-        return QuartzManager.getTriggerState(quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
+        return quartzManager.getTriggerState(quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
     }
 }

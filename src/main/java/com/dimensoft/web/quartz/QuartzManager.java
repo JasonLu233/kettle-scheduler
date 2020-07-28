@@ -2,14 +2,22 @@ package com.dimensoft.web.quartz;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
 
 
+@Component
 public class QuartzManager {
 
-    private static SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+    //private static SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+
+
+    @Autowired
+    private SchedulerFactoryBean schedulerFactory;
 
     /**
      * @param jobName          任务名
@@ -27,7 +35,7 @@ public class QuartzManager {
      * @Title addJob
      * @Description 添加一个定时任务
      */
-    public static Date addJob(String jobName, String jobGroupName,
+    public Date addJob(String jobName, String jobGroupName,
                               String triggerName, String triggerGroupName, Class<? extends Job> jobClass, String cron, Map<String, Object> parameter) {
         try {
             Scheduler sched = schedulerFactory.getScheduler();
@@ -60,7 +68,7 @@ public class QuartzManager {
     }
 
 
-    public static Date addOnceJob(String jobName, String jobGroupName,
+    public Date addOnceJob(String jobName, String jobGroupName,
                                   String triggerName, String triggerGroupName, Class<? extends Job> jobClass, Map<String, Object> parameter) {
         try {
             Scheduler sched = schedulerFactory.getScheduler();
@@ -120,7 +128,7 @@ public class QuartzManager {
      * @param cron             时间设置，参考quartz说明文档
      * @Description: 修改一个任务的触发时间
      */
-    public static void modifyJobTime(String jobName,
+    public  void modifyJobTime(String jobName,
                                      String jobGroupName, String triggerName, String triggerGroupName, String cron) {
         try {
             Scheduler sched = schedulerFactory.getScheduler();
@@ -164,7 +172,7 @@ public class QuartzManager {
      * @param triggerGroupName
      * @Description: 移除一个任务
      */
-    public static void removeJob(String jobName, String jobGroupName,
+    public void removeJob(String jobName, String jobGroupName,
                                  String triggerName, String triggerGroupName) {
         try {
             Scheduler sched = schedulerFactory.getScheduler();
@@ -181,7 +189,7 @@ public class QuartzManager {
     /**
      * @Description:启动所有定时任务
      */
-    public static void startJobs() {
+    public void startJobs() {
         try {
             Scheduler sched = schedulerFactory.getScheduler();
             sched.start();
@@ -193,7 +201,7 @@ public class QuartzManager {
     /**
      * @Description:关闭所有定时任务
      */
-    public static void shutdownJobs() {
+    public void shutdownJobs() {
         try {
             Scheduler sched = schedulerFactory.getScheduler();
             if (!sched.isShutdown()) {
@@ -216,7 +224,7 @@ public class QuartzManager {
      * @param triggerGroupName
      * @date 2018年5月21日 下午2:13:45
      */
-    public static String getTriggerState(String triggerName,String triggerGroupName){
+    public String getTriggerState(String triggerName,String triggerGroupName){
         TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, triggerGroupName);
         String name = null;
         try {

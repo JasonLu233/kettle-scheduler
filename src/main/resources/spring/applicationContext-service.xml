@@ -7,7 +7,18 @@
 						http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 	
 	<!-- 扫描包加载service实现类 -->
-	<context:component-scan base-package="com.dimensoft.web.service"/>
+	<context:component-scan base-package="com.dimensoft.web.service,com.dimensoft.web.quartz"/>
 	<!-- kettle的环境初始化 -->
 	<bean id="KettleEnvironmentInit" class="com.dimensoft.common.kettle.environment.StartInit"></bean>
+
+	<bean id="jobFactory" class="com.dimensoft.web.quartz.MyJobFactory"></bean>
+
+	<bean id="schedulerFactoryBean"
+		  class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="applicationContextSchedulerContextKey" value="applicationContextKey" />
+		<property name="jobFactory" ref="jobFactory"></property>
+		<property name="configLocation" value="classpath:quartz.properties" />
+	</bean>
+
+
 </beans>

@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.dimensoft.core.mapper.KTransRecordMapper;
 import com.dimensoft.core.model.KRepository;
 import com.dimensoft.core.model.KTransRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.core.appender.db.jdbc.ConnectionSource;
 import org.pentaho.di.core.ProgressNullMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
@@ -25,10 +27,15 @@ import org.quartz.*;
 import com.dimensoft.common.kettle.repository.RepositoryUtil;
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.web.quartz.model.DBConnectionModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@DisallowConcurrentExecution
+//@DisallowConcurrentExecution
 public class TransQuartz implements InterruptableJob {
     private Trans trans;
+
+    @Autowired
+    private KTransRecordMapper kTransRecordMapper;
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap transDataMap = context.getJobDetail().getJobDataMap();
@@ -235,7 +242,9 @@ public class TransQuartz implements InterruptableJob {
         // 将日志信息写入文件
         FileUtils.writeStringToFile(new File(kTransRecord.getLogFilePath()), logText, Constant.DEFAULT_ENCODING, false);
         // 写入转换运行记录到数据库
-        /*DBConnectionModel DBConnectionModel = (DBConnectionModel) DbConnectionObject;
+        kTransRecordMapper.insert(kTransRecord);
+        /*
+        DBConnectionModel DBConnectionModel = (DBConnectionModel) DbConnectionObject;
         ConnectionSource source = ConnectionSourceHelper.getSimple(DBConnectionModel.getConnectionDriveClassName(),
                 DBConnectionModel.getConnectionUrl(), DBConnectionModel.getConnectionUser(), DBConnectionModel.getConnectionPassword());
         DBStyle mysql = new MySqlStyle();

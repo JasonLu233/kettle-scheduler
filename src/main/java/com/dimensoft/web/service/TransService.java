@@ -30,6 +30,9 @@ import com.dimensoft.web.utils.CommonUtils;
 public class TransService {
 
     @Autowired
+    private QuartzManager quartzManager;
+
+    @Autowired
     private KTransMapper kTransMapper;
 
     @Autowired
@@ -267,12 +270,12 @@ public class TransService {
         // 判断转换执行类型
         try {
             if (new Integer(1).equals(kTrans.getTransQuartz())) {//如果是只执行一次
-                nextExecuteTime = QuartzManager.addOnceJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
+                nextExecuteTime = quartzManager.addOnceJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
                         quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"),
                         TransQuartz.class, quartzParameter);
             } else {// 如果是按照策略执行
                 //添加任务
-                nextExecuteTime = QuartzManager.addJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
+                nextExecuteTime = quartzManager.addJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
                         quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"),
                         TransQuartz.class, quartzCron, quartzParameter);
             }
@@ -303,10 +306,10 @@ public class TransService {
         // 移除任务
         if (new Integer(1).equals(kTrans.getTransQuartz())) {//如果是只执行一次
             // 一次性执行任务，不允许手动停止
-            QuartzManager.removeJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
+            quartzManager.removeJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
                     quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
         } else {// 如果是按照策略执行
-            QuartzManager.removeJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
+            quartzManager.removeJob(quartzBasic.get("jobName"), quartzBasic.get("jobGroupName"),
                     quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
         }
         // 移除监控
@@ -524,6 +527,6 @@ public class TransService {
         // 获取Quartz执行的基础信息
         Map<String, String> quartzBasic = getQuartzBasic(kTrans);
 
-        return QuartzManager.getTriggerState(quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
+        return quartzManager.getTriggerState(quartzBasic.get("triggerName"), quartzBasic.get("triggerGroupName"));
     }
 }

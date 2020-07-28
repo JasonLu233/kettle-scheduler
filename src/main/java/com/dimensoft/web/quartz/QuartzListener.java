@@ -28,7 +28,7 @@ public class QuartzListener implements JobListener{
 		String triggerName = context.getTrigger().getKey().getName();
 		String triggerGroupName = context.getTrigger().getKey().getGroup();
 		//一次性任务，执行完之后需要移除
-		QuartzManager.removeJob(jobName, jobGroupName, triggerName, triggerGroupName);
+		//QuartzManager.removeJob(jobName, jobGroupName, triggerName, triggerGroupName);
 
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		String jobId = String.valueOf(dataMap.get(Constant.TRANSID));
