@@ -35,6 +35,8 @@ public class KTrans {
 
     private Integer delFlag;
 
+    private Integer transExecType;
+
     public Integer getTransId() {
         return transId;
     }
@@ -161,5 +163,13 @@ public class KTrans {
 
     public void setDelFlag(Integer delFlag) {
         this.delFlag = delFlag;
+    }
+
+    public Integer getTransExecType() {
+        return transExecType;
+    }
+
+    public void setTransExecType(Integer transExecType) {
+        this.transExecType = transExecType;
     }
 }

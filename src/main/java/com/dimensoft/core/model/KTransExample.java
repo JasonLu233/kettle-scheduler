@@ -1104,6 +1104,66 @@ public class KTransExample {
             addCriterion("del_flag not between", value1, value2, "delFlag");
             return (Criteria) this;
         }
+
+        public Criteria andTransExecTypeIsNull() {
+            addCriterion("trans_exec_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeIsNotNull() {
+            addCriterion("trans_exec_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeEqualTo(Integer value) {
+            addCriterion("trans_exec_type =", value, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeNotEqualTo(Integer value) {
+            addCriterion("trans_exec_type <>", value, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeGreaterThan(Integer value) {
+            addCriterion("trans_exec_type >", value, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("trans_exec_type >=", value, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeLessThan(Integer value) {
+            addCriterion("trans_exec_type <", value, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("trans_exec_type <=", value, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeIn(List<Integer> values) {
+            addCriterion("trans_exec_type in", values, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeNotIn(List<Integer> values) {
+            addCriterion("trans_exec_type not in", values, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeBetween(Integer value1, Integer value2) {
+            addCriterion("trans_exec_type between", value1, value2, "transExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransExecTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("trans_exec_type not between", value1, value2, "transExecType");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

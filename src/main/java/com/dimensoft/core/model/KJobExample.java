@@ -1104,6 +1104,66 @@ public class KJobExample {
             addCriterion("del_flag not between", value1, value2, "delFlag");
             return (Criteria) this;
         }
+
+        public Criteria andJobExecTypeIsNull() {
+            addCriterion("job_exec_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeIsNotNull() {
+            addCriterion("job_exec_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeEqualTo(Integer value) {
+            addCriterion("job_exec_type =", value, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeNotEqualTo(Integer value) {
+            addCriterion("job_exec_type <>", value, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeGreaterThan(Integer value) {
+            addCriterion("job_exec_type >", value, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("job_exec_type >=", value, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeLessThan(Integer value) {
+            addCriterion("job_exec_type <", value, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("job_exec_type <=", value, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeIn(List<Integer> values) {
+            addCriterion("job_exec_type in", values, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeNotIn(List<Integer> values) {
+            addCriterion("job_exec_type not in", values, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeBetween(Integer value1, Integer value2) {
+            addCriterion("job_exec_type between", value1, value2, "jobExecType");
+            return (Criteria) this;
+        }
+
+        public Criteria andJobExecTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("job_exec_type not between", value1, value2, "jobExecType");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

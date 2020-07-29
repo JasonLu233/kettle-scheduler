@@ -74,6 +74,8 @@ public class Constant extends Const {
 	public static final String USERID = "USERID";
 	public static final String LOGLEVEL = "LOGLEVEL";
 	public static final String LOGFILEPATH = "LOGFILEPATH";
+
+	public static final String EXEC_TYPE = "EXECTYPE";
 	
 	public static final String RUNSTATUS_SEPARATE = "-";
 	

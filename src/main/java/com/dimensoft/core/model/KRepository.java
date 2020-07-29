@@ -1,8 +1,12 @@
 package com.dimensoft.core.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class KRepository {
+public class KRepository implements Serializable {
+
+    private static final long serialVersionUID = 1101l;
+
     private Integer repositoryId;
 
     private String repositoryName;

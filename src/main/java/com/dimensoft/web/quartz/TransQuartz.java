@@ -3,10 +3,16 @@ package com.dimensoft.web.quartz;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
+import com.dimensoft.core.mapper.KTransMonitorMapper;
 import com.dimensoft.core.mapper.KTransRecordMapper;
 import com.dimensoft.core.model.KRepository;
+import com.dimensoft.core.model.KTransMonitor;
+import com.dimensoft.core.model.KTransMonitorExample;
 import com.dimensoft.core.model.KTransRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +35,8 @@ import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.web.quartz.model.DBConnectionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 //@DisallowConcurrentExecution
 public class TransQuartz implements InterruptableJob {
@@ -36,6 +44,10 @@ public class TransQuartz implements InterruptableJob {
 
     @Autowired
     private KTransRecordMapper kTransRecordMapper;
+
+    @Autowired
+    private KTransMonitorMapper kTransMonitorMapper;
+
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap transDataMap = context.getJobDetail().getJobDataMap();
@@ -47,14 +59,21 @@ public class TransQuartz implements InterruptableJob {
         String userId = String.valueOf(transDataMap.get(Constant.USERID));
         String logLevel = String.valueOf(transDataMap.get(Constant.LOGLEVEL));
         String logFilePath = String.valueOf(transDataMap.get(Constant.LOGFILEPATH));
+        String execType = String.valueOf(transDataMap.get(Constant.EXEC_TYPE));
         Date lastExecuteTime = context.getFireTime();
         Date nexExecuteTime = context.getNextFireTime();
         if (null != DbConnectionObject && DbConnectionObject instanceof DBConnectionModel) {// 首先判断数据库连接对象是否正确
             // 判断转换类型
             if (null != KRepositoryObject && KRepositoryObject instanceof KRepository) {// 证明该转换是从资源库中获取到的
                 try {
-                    runRepositorytrans(KRepositoryObject, DbConnectionObject, transId, transPath, transName, userId,
-                            logLevel, logFilePath, lastExecuteTime, nexExecuteTime);
+                    if("1".equals(execType)){
+                        runRepositorytrans(KRepositoryObject, DbConnectionObject, transId, transPath, transName, userId,
+                                logLevel, logFilePath, lastExecuteTime, nexExecuteTime);
+                    }else {
+                        runTransWithShell(KRepositoryObject,transId, transPath, transName, userId,
+                                logLevel, logFilePath, lastExecuteTime, nexExecuteTime);
+                    }
+
                 } catch (KettleException e) {
                     e.printStackTrace();
                 }
@@ -237,12 +256,28 @@ public class TransQuartz implements InterruptableJob {
      * @Title writeToDBAndFile
      * @Description 保存转换运行日志信息到文件和数据库
      */
-    private void writeToDBAndFile(Object DbConnectionObject, KTransRecord kTransRecord, String logText, Date lastExecuteTime, Date nextExecuteTime)
+    @Transactional
+    public void writeToDBAndFile(Object DbConnectionObject, KTransRecord kTransRecord, String logText, Date lastExecuteTime, Date nextExecuteTime)
             throws IOException, SQLException {
         // 将日志信息写入文件
         FileUtils.writeStringToFile(new File(kTransRecord.getLogFilePath()), logText, Constant.DEFAULT_ENCODING, false);
         // 写入转换运行记录到数据库
         kTransRecordMapper.insert(kTransRecord);
+
+        KTransMonitorExample example = new KTransMonitorExample();
+        example.createCriteria().andAddUserEqualTo(kTransRecord.getAddUser()).andMonitorTransEqualTo(kTransRecord.getRecordTrans());
+        KTransMonitor kTransMonitor = kTransMonitorMapper.selectOneByExample(example);
+
+        if (kTransRecord.getRecordStatus() == 1) {// 证明成功
+            //成功次数加1
+            kTransMonitor.setMonitorSuccess(kTransMonitor.getMonitorSuccess() + 1);
+            kTransMonitorMapper.updateByPrimaryKey(kTransMonitor);
+        } else if (kTransRecord.getRecordStatus() == 2) {// 证明失败
+            //失败次数加1
+            kTransMonitor.setMonitorFail(kTransMonitor.getMonitorFail() + 1);
+            kTransMonitorMapper.updateByPrimaryKey(kTransMonitor);
+        }
+
         /*
         DBConnectionModel DBConnectionModel = (DBConnectionModel) DbConnectionObject;
         ConnectionSource source = ConnectionSourceHelper.getSimple(DBConnectionModel.getConnectionDriveClassName(),
@@ -270,6 +305,54 @@ public class TransQuartz implements InterruptableJob {
             sqlManager.updateById(templateOne);
         }
         DSTransactionManager.commit();*/
+    }
+
+
+    public void runTransWithShell(Object KRepositoryObject, String transId,
+                                  String transPath, String transName, String userId, String logLevel, String logFilePath, Date executeTime, Date nexExecuteTime)
+            throws KettleException {
+
+        KRepository kRepository = (KRepository) KRepositoryObject;
+        Integer repositoryId = kRepository.getRepositoryId();
+        KettleDatabaseRepository kettleDatabaseRepository = null;
+        RepositoryDirectoryInterface directory = null;
+        if (RepositoryUtil.KettleDatabaseRepositoryCatch.containsKey(repositoryId)) {
+            kettleDatabaseRepository = RepositoryUtil.KettleDatabaseRepositoryCatch.get(repositoryId);
+        } else {
+            kettleDatabaseRepository = RepositoryUtil.connectionRepository(kRepository);
+        }
+        if (null != kettleDatabaseRepository) {
+            directory = kettleDatabaseRepository.loadRepositoryDirectoryTree()
+                    .findDirectory(transPath);
+        }
+
+        //System.out.println(new ProcessExecutor().command("/home/jason/tools/pdi-ce-8.3.0.0-371/data-integration/pan.sh","-rep","local", "-user", "admin", "-pass", "admin", "-trans" ,"test1" ,"-dir" ,"/test").redirectOutput(out).readOutput(true).execute().outputUTF8());
+        //a.toArray(new String[a.size()])
+        String kettleHome="";
+
+        List<String> shellArgs = new LinkedList<String>();
+        shellArgs.add("/home/jason/tools/pdi-ce-8.3.0.0-371/data-integration/pan.sh");
+
+        shellArgs.add("-rep");
+        shellArgs.add(kRepository.getRepositoryName());
+        shellArgs.add("-user");
+        shellArgs.add(kRepository.getRepositoryUsername());
+        shellArgs.add("-pass");
+        shellArgs.add(kRepository.getRepositoryPassword());
+        shellArgs.add("-trans");
+        shellArgs.add(transName);
+        shellArgs.add("-dir");
+        shellArgs.add(directory.getPath());
+
+        System.out.println(shellArgs);
+
+        try{
+            new ProcessExecutor().command(shellArgs).redirectOutput(System.out).readOutput(true).execute().outputUTF8();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override

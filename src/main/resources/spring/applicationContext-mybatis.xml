@@ -16,14 +16,19 @@
 						http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
 	<!-- 加载配置文件 -->
-	<bean id="dbPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+
+	<context:property-placeholder location="classpath:resource/*.properties"/>
+
+	<!--<bean id="dbPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">  
             <list>  
-                <value>classpath:resource/db.properties</value>
+                <value>classpath:resource/*.properties</value>
             </list>  
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true" /> 
-    </bean>
+    </bean>-->
+
+
 	<!-- 数据库连接池 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		destroy-method="close">
@@ -67,6 +72,16 @@
 		<!--mapper接口所在的包-->
 		<property name="basePackage" value="com.dimensoft.core.mapper" />
 	</bean>
+
+
+	<!--事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<!-- 使用注解事务，需要添加Transactional注解属性 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
 
 
 

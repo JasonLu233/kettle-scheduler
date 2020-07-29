@@ -35,6 +35,8 @@ public class KJob {
 
     private Integer delFlag;
 
+    private Integer jobExecType;
+
     public Integer getJobId() {
         return jobId;
     }
@@ -161,5 +163,13 @@ public class KJob {
 
     public void setDelFlag(Integer delFlag) {
         this.delFlag = delFlag;
+    }
+
+    public Integer getJobExecType() {
+        return jobExecType;
+    }
+
+    public void setJobExecType(Integer jobExecType) {
+        this.jobExecType = jobExecType;
     }
 }

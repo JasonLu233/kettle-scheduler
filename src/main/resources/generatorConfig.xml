@@ -55,17 +55,18 @@
         domainObjectName：生成的domain类的名字,当表名和domain类的名字有差异时一定要设置，如果不设置，直接使用表名作为domain类的名字；
         可以设置为somepck.domainName，那么会自动把domainName类再放到somepck包里面；
         -->
-        <table schema="kettleweb" tableName="k_category" domainObjectName="KCategory"></table>
+
         <table schema="kettleweb" tableName="k_job" domainObjectName="KJob"></table>
-        <table schema="kettleweb" tableName="k_job_monitor" domainObjectName="KJobMonitor"></table>
+        <table schema="kettleweb" tableName="k_trans" domainObjectName="KTrans"></table>
+        <!--<table schema="kettleweb" tableName="k_job_monitor" domainObjectName="KJobMonitor"></table>
         <table schema="kettleweb" tableName="k_job_record" domainObjectName="KJobRecord"></table>
         <table schema="kettleweb" tableName="k_quartz" domainObjectName="KQuartz"></table>
         <table schema="kettleweb" tableName="k_repository" domainObjectName="KRepository"></table>
         <table schema="kettleweb" tableName="k_repository_type" domainObjectName="KRepositoryType"></table>
-        <table schema="kettleweb" tableName="k_trans" domainObjectName="KTrans"></table>
+        <table schema="kettleweb" tableName="k_category" domainObjectName="KCategory"></table>
         <table schema="kettleweb" tableName="k_trans_monitor" domainObjectName="KTransMonitor"></table>
         <table schema="kettleweb" tableName="k_trans_record" domainObjectName="KTransRecord"></table>
-        <table schema="kettleweb" tableName="k_user" domainObjectName="KUser"></table>
+        <table schema="kettleweb" tableName="k_user" domainObjectName="KUser"></table>-->
 
     </context>
 </generatorConfiguration>

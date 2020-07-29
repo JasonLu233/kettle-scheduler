@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 
-import com.dimensoft.core.model.KJobMonitor;
-import com.dimensoft.core.model.KJobRecord;
-import com.dimensoft.core.model.KRepository;
+import com.dimensoft.core.mapper.KJobMonitorMapper;
+import com.dimensoft.core.mapper.KJobRecordMapper;
+import com.dimensoft.core.model.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.core.appender.db.jdbc.ConnectionSource;
@@ -26,10 +26,19 @@ import org.quartz.*;
 import com.dimensoft.common.kettle.repository.RepositoryUtil;
 import com.dimensoft.common.toolkit.Constant;
 import com.dimensoft.web.quartz.model.DBConnectionModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 @DisallowConcurrentExecution
 public class JobQuartz implements InterruptableJob {
     private org.pentaho.di.job.Job job;
+
+    @Autowired
+    private KJobRecordMapper kJobRecordMapper;
+
+    @Autowired
+    private KJobMonitorMapper kJobMonitorMapper;
+
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
@@ -210,8 +219,27 @@ public class JobQuartz implements InterruptableJob {
      * @Title writeToDBAndFile
      * @Description 保存作业运行日志信息到文件和数据库
      */
-    private void writeToDBAndFile(Object DbConnectionObject, KJobRecord kJobRecord, String logText, Date lastExecuteTime, Date nextExecuteTime)
+    @Transactional
+    public void writeToDBAndFile(Object DbConnectionObject, KJobRecord kJobRecord, String logText, Date lastExecuteTime, Date nextExecuteTime)
             throws IOException, SQLException {
+
+        // 将日志信息写入文件
+        FileUtils.writeStringToFile(new File(kJobRecord.getLogFilePath()), logText, Constant.DEFAULT_ENCODING, false);
+        // 写入转换运行记录到数据库
+        kJobRecordMapper.insert(kJobRecord);
+
+        KJobMonitorExample example = new KJobMonitorExample();
+        example.createCriteria().andAddUserEqualTo(kJobRecord.getAddUser()).andMonitorJobEqualTo(kJobRecord.getRecordJob());
+        KJobMonitor kJobMonitor = kJobMonitorMapper.selectOneByExample(example);
+
+        if (kJobRecord.getRecordStatus() == 1) {
+            kJobMonitor.setMonitorSuccess(kJobMonitor.getMonitorSuccess() + 1);
+            kJobMonitorMapper.updateByPrimaryKey(kJobMonitor);
+        } else if (kJobRecord.getRecordStatus() == 2) {
+            kJobMonitor.setMonitorFail(kJobMonitor.getMonitorFail() + 1);
+            kJobMonitorMapper.updateByPrimaryKey(kJobMonitor);
+        }
+
         /*// 将日志信息写入文件
         FileUtils.writeStringToFile(new File(kJobRecord.getLogFilePath()), logText, Constant.DEFAULT_ENCODING, false);
         // 写入转换运行记录到数据库

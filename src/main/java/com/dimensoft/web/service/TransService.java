@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dimensoft.common.toolkit.Constant;
@@ -167,6 +168,7 @@ public class TransService {
      * @Title insert
      * @Description 添加转换到数据库
      */
+    @Transactional
     public void insert(KTrans kTrans, Integer uId, String customerQuarz) throws SQLException {
         //DSTransactionManager.start();
         //补充添加作业信息
@@ -389,6 +391,9 @@ public class TransService {
         parameter.put(Constant.LOGLEVEL, kTrans.getTransLogLevel());
         // 转换日志的保存位置
         parameter.put(Constant.LOGFILEPATH, kettleLogFilePath);
+
+        parameter.put(Constant.EXEC_TYPE, kTrans.getTransExecType());
+
         return parameter;
     }
 

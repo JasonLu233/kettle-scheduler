@@ -7,6 +7,7 @@ import java.util.List;
 import com.dimensoft.core.mapper.KJobRecordMapper;
 import com.dimensoft.core.model.KJobRecord;
 import com.dimensoft.core.model.KJobRecordExample;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class JobRecordService {
 		}
 		KJobRecordExample example = new KJobRecordExample();
 		example.createCriteria().andAddUserEqualTo(uId);
+		PageHelper.offsetPage(start, size);
 		List<KJobRecord> kJobRecordList = kJobRecordMapper.selectByExample(example);
 		long totalCount = kJobRecordMapper.countByExample(example);
 		BootTablePage bootTablePage = new BootTablePage();

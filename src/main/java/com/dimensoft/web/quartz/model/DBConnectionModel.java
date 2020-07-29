@@ -1,6 +1,10 @@
 package com.dimensoft.web.quartz.model;
 
-public class DBConnectionModel {
+import java.io.Serializable;
+
+public class DBConnectionModel implements Serializable {
+
+	private static final long serialVersionUID = 1234l;
 
 	private String connectionDriveClassName;
 	private String connectionUrl;

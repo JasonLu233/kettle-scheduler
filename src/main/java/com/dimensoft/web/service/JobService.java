@@ -391,6 +391,8 @@ public class JobService {
         parameter.put(Constant.LOGLEVEL, kJob.getJobLogLevel());
         // 转换日志的保存位置
         parameter.put(Constant.LOGFILEPATH, kettleLogFilePath);
+
+        parameter.put(Constant.EXEC_TYPE, kJob.getJobExecType());
         return parameter;
     }
 

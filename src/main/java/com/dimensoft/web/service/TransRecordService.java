@@ -7,6 +7,7 @@ import java.util.List;
 import com.dimensoft.core.mapper.KTransRecordMapper;
 import com.dimensoft.core.model.KTransRecord;
 import com.dimensoft.core.model.KTransRecordExample;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class TransRecordService {
 		}
 		KTransRecordExample example = new KTransRecordExample();
 		example.createCriteria().andAddUserEqualTo(uId);
+		PageHelper.offsetPage(start, size);
 		List<KTransRecord> kTransRecordList = kTransRecordMapper.selectByExample(example);
 		long totalCount = kTransRecordMapper.countByExample(example);
 		BootTablePage bootTablePage = new BootTablePage();
