@@ -1,7 +1,9 @@
 package com.dimensoft.web.quartz;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
@@ -307,7 +309,7 @@ public class TransQuartz implements InterruptableJob {
         DSTransactionManager.commit();*/
     }
 
-
+    @Transactional
     public void runTransWithShell(Object KRepositoryObject, String transId,
                                   String transPath, String transName, String userId, String logLevel, String logFilePath, Date executeTime, Date nexExecuteTime)
             throws KettleException {
@@ -316,7 +318,7 @@ public class TransQuartz implements InterruptableJob {
         Integer repositoryId = kRepository.getRepositoryId();
         KettleDatabaseRepository kettleDatabaseRepository = null;
         RepositoryDirectoryInterface directory = null;
-        if (RepositoryUtil.KettleDatabaseRepositoryCatch.containsKey(repositoryId)) {
+        /*if (RepositoryUtil.KettleDatabaseRepositoryCatch.containsKey(repositoryId)) {
             kettleDatabaseRepository = RepositoryUtil.KettleDatabaseRepositoryCatch.get(repositoryId);
         } else {
             kettleDatabaseRepository = RepositoryUtil.connectionRepository(kRepository);
@@ -324,7 +326,7 @@ public class TransQuartz implements InterruptableJob {
         if (null != kettleDatabaseRepository) {
             directory = kettleDatabaseRepository.loadRepositoryDirectoryTree()
                     .findDirectory(transPath);
-        }
+        }*/
 
         //System.out.println(new ProcessExecutor().command("/home/jason/tools/pdi-ce-8.3.0.0-371/data-integration/pan.sh","-rep","local", "-user", "admin", "-pass", "admin", "-trans" ,"test1" ,"-dir" ,"/test").redirectOutput(out).readOutput(true).execute().outputUTF8());
         //a.toArray(new String[a.size()])
@@ -342,14 +344,67 @@ public class TransQuartz implements InterruptableJob {
         shellArgs.add("-trans");
         shellArgs.add(transName);
         shellArgs.add("-dir");
-        shellArgs.add(directory.getPath());
+        shellArgs.add(transPath);
 
         System.out.println(shellArgs);
 
+        StringBuilder allLogFilePath = new StringBuilder();
+        allLogFilePath.append(logFilePath).append("/").append("shellexec").append("/")
+                .append(StringUtils.remove(transPath, "/")).append("@").append(transName).append("-log")
+                .append("/").append(new Date().getTime()).append(".").append("txt");
+
+        File f = new File(allLogFilePath.toString());
+
+        String exception = null;
+        Integer recordStatus = 1;
+//      Date transStartDate = null;
+        Date transStopDate = null;
+        String logText = null;
+
+
+        if(!f.getParentFile().exists()){
+            f.getParentFile().mkdirs();
+        }
         try{
-            new ProcessExecutor().command(shellArgs).redirectOutput(System.out).readOutput(true).execute().outputUTF8();
+
+            f.createNewFile();
+            OutputStream out = new FileOutputStream(f);
+
+            int retcode = new ProcessExecutor().command(shellArgs).redirectOutputAlsoTo(out).readOutput(true).execute().getExitValue();
+
+            if(0==retcode){
+                recordStatus=1;
+            }else {
+                recordStatus=2;
+            }
+
         }catch (Exception e){
+            recordStatus=2;
             e.printStackTrace();
+        }finally {
+            KTransRecord kTransRecord = new KTransRecord();
+            kTransRecord.setRecordTrans(Integer.parseInt(transId));
+            kTransRecord.setLogFilePath(allLogFilePath.toString());
+            kTransRecord.setAddUser(Integer.parseInt(userId));
+            kTransRecord.setRecordStatus(recordStatus);
+            kTransRecord.setStartTime(executeTime);
+            kTransRecord.setStopTime(new Date());
+
+            kTransRecordMapper.insert(kTransRecord);
+
+            KTransMonitorExample example = new KTransMonitorExample();
+            example.createCriteria().andAddUserEqualTo(kTransRecord.getAddUser()).andMonitorTransEqualTo(kTransRecord.getRecordTrans());
+            KTransMonitor kTransMonitor = kTransMonitorMapper.selectOneByExample(example);
+
+            if (kTransRecord.getRecordStatus() == 1) {// 证明成功
+                //成功次数加1
+                kTransMonitor.setMonitorSuccess(kTransMonitor.getMonitorSuccess() + 1);
+                kTransMonitorMapper.updateByPrimaryKey(kTransMonitor);
+            } else if (kTransRecord.getRecordStatus() == 2) {// 证明失败
+                //失败次数加1
+                kTransMonitor.setMonitorFail(kTransMonitor.getMonitorFail() + 1);
+                kTransMonitorMapper.updateByPrimaryKey(kTransMonitor);
+            }
         }
 
 

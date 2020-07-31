@@ -12,4 +12,5 @@ public class StartInit implements InitializingBean{
 		org.pentaho.di.core.KettleEnvironment.init();
 	}
 
+
 }
